@@ -147,6 +147,7 @@ struct stButton {
 struct stButtonCtx {
     /** Button to switch between fullscreen and windowed mode */
     button fullscreen;
+	button mouse;
 #if defined(DEBUG)
     /** Add button to switch rendering of the quadtree */
     button qt;
