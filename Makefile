@@ -2,15 +2,16 @@
 #=======================================================================
 # Define every object required by compilation
 #=======================================================================
-  OBJS =                        \
-          $(OBJDIR)/assets.o    \
-          $(OBJDIR)/collision.o \
-          $(OBJDIR)/config.o    \
-          $(OBJDIR)/gamestate.o \
-          $(OBJDIR)/global.o    \
-          $(OBJDIR)/input.o     \
-          $(OBJDIR)/main.o      \
-          $(OBJDIR)/object.o
+  OBJS =                           \
+          $(OBJDIR)/assets.o       \
+          $(OBJDIR)/collision.o    \
+          $(OBJDIR)/config.o       \
+          $(OBJDIR)/gamestate.o    \
+          $(OBJDIR)/global.o       \
+          $(OBJDIR)/input.o        \
+          $(OBJDIR)/main.o         \
+          $(OBJDIR)/object.o       \
+          $(OBJDIR)/recipeScroll.o
 #=======================================================================
 
 #=======================================================================

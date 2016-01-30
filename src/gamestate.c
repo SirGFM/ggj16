@@ -15,6 +15,7 @@
 
 #include <ggj16/gamestate.h>
 #include <ggj16/object.h>
+#include <ggj16/recipeScroll.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -29,15 +30,13 @@ struct stGamestate {
     gfmTilemap *pBackground;
     /** List of objects */
     gfmGenArr_var(object, pObjects);
+    /** Current recipe */
+    recipeScroll *pRecipe;
 };
 typedef struct stGamestate gamestate;
 
-static char *dictStr[] = {
-    "dummy"
-};
-static int dictType[] = {
-    0
-};
+static char *dictStr[] = { "dummy" };
+static int dictType[] = { 0 };
 static int dictLen = sizeof(dictType) / sizeof(int);
 
 /**
@@ -51,6 +50,7 @@ void gs_free() {
     pState = (gamestate*)pGame->pState;
 
     gfmTilemap_free(&(pState->pBackground));
+    recipeScroll_free(&(pState->pRecipe));
 }
 
 /**
@@ -120,6 +120,14 @@ gfmRV gs_init() {
             ASSERT(0, GFMRV_INTERNAL_ERROR);
         }
     } /* while(1) parser */
+
+    /* Initialize the recipe */
+    rv = recipeScroll_getNew(&(pState->pRecipe));
+    ASSERT(rv == GFMRV_OK, rv);
+    /* TODO Load level from generator */
+    int pData[] = {0, 0, 0, 0};
+    rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int));
+    ASSERT(rv == GFMRV_OK, rv);
 
     pGame->pState = pState;
     rv = GFMRV_OK;
