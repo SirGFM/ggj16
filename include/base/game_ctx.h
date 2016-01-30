@@ -100,6 +100,8 @@ typedef enum enGameFlags gameFlags;
 struct stGameCtx {
     /** The framework's context */
     gfmCtx *pCtx;
+    /** The currently running state (if any) */
+    void *pState;
     /** Binary flags for the game (e.g., whether it's in fullscreen mode); Check
      * 'enum enGameFlags' documentation */
     gameFlags flags;
@@ -116,6 +118,10 @@ struct stGameCtx {
 struct stGfxCtx {
     /** 8x8 spriteset of the main texture */
     gfmSpriteset *pSset8x8;
+    /** 16x16 spriteset of the main texture */
+    gfmSpriteset *pSset16x16;
+    /** 32x32 spriteset of the main texture */
+    gfmSpriteset *pSset32x32;
     /** Handle of the main texture atlas */
     int texHandle;
 };

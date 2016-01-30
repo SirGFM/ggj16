@@ -17,9 +17,9 @@
 /** Config file name */
 #define CONF        "config.sav"
 /** Virtual window's width */
-#define V_WIDTH     320
+#define V_WIDTH     160
 /** Virtual window's height */
-#define V_HEIGHT    240
+#define V_HEIGHT    120
 /** Whether the user can resize the game window */
 #define CAN_RESIZE  1
 /** Initial background color in 0xAARRGGBB format */
@@ -61,7 +61,7 @@
 /* == ... =================================================================== */
 
 /** Texture's transparent color */
-#define KEY_COLOR       0xFF00FF
+#define COLORKEY        0xFF00FF
 /** Maximum number of times the quadtree will subdivide */
 #define QT_MAX_DEPTH    6
 /** Number of nodes required for the quadtree to subdivide */
