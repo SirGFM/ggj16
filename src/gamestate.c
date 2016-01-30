@@ -154,6 +154,8 @@ gfmRV gs_update() {
     /* Update all objects */
     gfmGenArr_callAll(pState->pObjects, object_update);
 
+	gs_updateObjectsInteraction();
+	
     rv = GFMRV_OK;
 __ret:
     return GFMRV_OK;
@@ -184,3 +186,35 @@ __ret:
     return GFMRV_OK;
 }
 
+gfmRV gs_updateObjectsInteraction() {
+	gfmRV result = GFMRV_OK;
+	gfmInput *pInput;
+	int mouseX;
+	int mouseY;
+	result = gfm_getInput(&pInput, pGame->pCtx);	
+	result = gfmInput_getPointerPosition(&mouseX, &mouseY, pInput);
+	
+    if 
+	(
+		(pButton->mouse.state & gfmInput_pressed) == gfmInput_pressed
+	) 
+	{
+		gamestate *pState = (gamestate*)pGame->pState;		
+		int totalObjects = gfmGenArr_getUsed(pState->pObjects);
+		int i;
+		object *pObj = NULL;
+		for (i = 0; i < totalObjects; i++) {
+			pObj = gfmGenArr_getObject(pState->pObjects, i);
+			
+			if 
+			(
+				object_isPointInside(pObj, mouseX, mouseY) == GFMRV_TRUE
+			) {
+				object_initDrag(pObj);
+				break;
+			}
+		}
+	}
+
+	return result;
+}

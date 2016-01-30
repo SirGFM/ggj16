@@ -18,9 +18,19 @@
 
 static int isAnyObjectDragging = GFMRV_FALSE;
 
+enum enObjectType
+{
+	object_ingredient,
+	object_cauldron
+};typedef enum enObjectType objectType;
+
+
 struct stObject {
     /** The object's sprite */
     gfmSprite *pSelf;
+	objectType type;
+	int initialPosX;
+	int initialPosY;
 	int isDragging;
 };
 
@@ -113,18 +123,17 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
         height = 18;
         tile = 24;
         pSset = pGfx->pSset32x32;
+		pObj->type = object_cauldron;
     }
     else if (strcmp(pName, "rat_tail") == 0) {
         tile = 352;
         pSset = pGfx->pSset8x8;
-		
-		if (isAnyObjectDragging == GFMRV_FALSE)
-		{
-			isAnyObjectDragging = GFMRV_TRUE;
-			pObj->isDragging = GFMRV_TRUE;
-		}
+		pObj->type = object_ingredient;
     }
     type = 0;
+	
+	pObj->initialPosX = x;
+	pObj->initialPosY = y;
 
     /** Initialize the sprite */
     rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset, 0 /* offx */,
@@ -171,12 +180,8 @@ gfmRV object_handleDragNDrop(object *pObj) {
 	gfmInput *pInput;
 	gfm_getInput(&pInput, pGame->pCtx);	
 	
-	if ((isAnyObjectDragging)  && (pObj->isDragging)) {
+	if (pObj->isDragging) {
 			result = object_updateDrag(pInput, pObj);
-	}
-	else
-	{
-		result = object_handleNewDrag(pInput, pObj);
 	}
 
 	return result;
@@ -191,7 +196,18 @@ gfmRV object_updateDrag(gfmInput *pInput, object *pObj) {
 	
 	return result;
 }
- 
-gfmRV object_handleNewDrag(gfmInput *pInput, object *pObj) {
+
+gfmRV object_initDrag(object *pObj) {	
+	pObj->isDragging = GFMRV_TRUE;
+	isAnyObjectDragging = GFMRV_TRUE;
+	
 	return GFMRV_OK;
-} 
+}
+
+gfmRV object_isPointInside(object *pObj, int x, int y) {
+	gfmRV result = 	(pObj->type == object_ingredient) ?
+							gfmSprite_isPointInside(pObj->pSelf, x, y) :
+							GFMRV_FALSE;
+							
+	return result;		
+}

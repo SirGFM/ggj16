@@ -29,5 +29,8 @@ gfmRV gs_update();
  */
 gfmRV gs_draw();
 
+
+gfmRV gs_updateObjectsInteraction();
+
 #endif  /* __GAMESTATE_H__ */
 
