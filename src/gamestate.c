@@ -84,6 +84,42 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Load all objects */
+    rv = gfmParser_getNew(&pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmParser_initStatic(pParser, pGame->pCtx, "map/map_obj.gfm");
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Parse every object */
+    while (1) {
+        gfmParserType type;
+
+        /* Start parsing the next object */
+        rv = gfmParser_parseNext(pParser);
+        if (rv == GFMRV_PARSER_FINISHED) {
+            break;
+        }
+        rv = gfmParser_getType(&type, pParser);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        if (type == gfmParserType_area) {
+            /* There should be no areas */
+            ASSERT(0, GFMRV_INTERNAL_ERROR);
+        }
+        else if (type == gfmParserType_object) {
+            object *pObj;
+
+            /* Parse and spawn the object */
+            gfmGenArr_getNextRef(object, pState->pObjects, 1/* inc */, pObj,
+                    object_getNew);
+            rv = object_init(pObj, pParser);
+            ASSERT(rv == GFMRV_OK, rv);
+            gfmGenArr_push(pState->pObjects);
+        }
+        else {
+            /* Something weird happened */
+            ASSERT(0, GFMRV_INTERNAL_ERROR);
+        }
+    } /* while(1) parser */
 
     pGame->pState = pState;
     rv = GFMRV_OK;

@@ -9,6 +9,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmParser.h>
 #include <GFraMe/gfmSprite.h>
+#include <GFraMe/gfmSpriteset.h>
 
 #include <ggj16/object.h>
 
@@ -81,6 +82,50 @@ __ret:
  * @return            GFraMe return value
  */
 gfmRV object_init(object *pObj, gfmParser *pParser) {
+    /** Sprite's type */
+    char *pName;
+    /** GFraMe return value */
+    gfmRV rv;
+    /** Sprite's spriteset */
+    gfmSpriteset *pSset;
+    /** Sprite's position */
+    int x, y;
+    /** Sprite's dimensions */
+    int height, width;
+    /** Sprite's tile */
+    int tile, type;
+
+    /** Get the object's position, dimensions and type */
+    rv = gfmParser_getPos(&x, &y, pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmParser_getDimensions(&width, &height, pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmParser_getIngameType(&pName, pParser);
+    ASSERT(rv == GFMRV_OK, rv);
+    /** Adjust the vertical position to the sprite's top */
+    y -= height;
+    /* Set the tile and spriteset according to the type */
+    if (strcmp(pName, "cauldron") == 0) {
+        width = 20;
+        height = 18;
+        tile = 24;
+        pSset = pGfx->pSset32x32;
+    }
+    else if (strcmp(pName, "rat_tail") == 0) {
+        tile = 352;
+        pSset = pGfx->pSset8x8;
+    }
+    type = 0;
+
+    /** Initialize the sprite */
+    rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset, 0 /* offx */,
+            0 /* offy */, pObj, type);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setFrame(pObj->pSelf, tile);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
     return GFMRV_OK;
 }
 
@@ -91,7 +136,7 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
  * @return            GFraMe return value
  */
 gfmRV object_update(object *pObj) {
-    return GFMRV_OK;
+    return gfmSprite_update(pObj->pSelf, pGame->pCtx);
 }
 
 /**
@@ -101,6 +146,6 @@ gfmRV object_update(object *pObj) {
  * @return            GFraMe return value
  */
 gfmRV object_draw(object *pObj) {
-    return GFMRV_OK;
+    return gfmSprite_draw(pObj->pSelf, pGame->pCtx);
 }
 
