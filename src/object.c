@@ -16,9 +16,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int isAnyObjectDragging = GFMRV_FALSE;
+
 struct stObject {
     /** The object's sprite */
     gfmSprite *pSelf;
+	int isDragging;
 };
 
 /**
@@ -114,6 +117,12 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     else if (strcmp(pName, "rat_tail") == 0) {
         tile = 352;
         pSset = pGfx->pSset8x8;
+		
+		if (isAnyObjectDragging == GFMRV_FALSE)
+		{
+			isAnyObjectDragging = GFMRV_TRUE;
+			pObj->isDragging = GFMRV_TRUE;
+		}
     }
     type = 0;
 
@@ -136,6 +145,7 @@ __ret:
  * @return            GFraMe return value
  */
 gfmRV object_update(object *pObj) {
+	object_handleDragNDrop(pObj);
     return gfmSprite_update(pObj->pSelf, pGame->pCtx);
 }
 
@@ -149,3 +159,39 @@ gfmRV object_draw(object *pObj) {
     return gfmSprite_draw(pObj->pSelf, pGame->pCtx);
 }
 
+/**
+ * Handles drag and drop behaviour
+ *
+ * @param  [ in]pObj    The parsed object
+ * @return            GFraMe return value
+ */
+gfmRV object_handleDragNDrop(object *pObj) {
+	gfmRV result = GFMRV_OK;
+	
+	gfmInput *pInput;
+	gfm_getInput(&pInput, pGame->pCtx);	
+	
+	if ((isAnyObjectDragging)  && (pObj->isDragging)) {
+			result = object_updateDrag(pInput, pObj);
+	}
+	else
+	{
+		result = object_handleNewDrag(pInput, pObj);
+	}
+
+	return result;
+}
+
+gfmRV object_updateDrag(gfmInput *pInput, object *pObj) {
+	int posX;
+	int posY;
+	gfmRV result = gfmInput_getPointerPosition(&posX, &posY, pInput);
+	
+	gfmSprite_setPosition(pObj->pSelf, posX, posY);
+	
+	return result;
+}
+ 
+gfmRV object_handleNewDrag(gfmInput *pInput, object *pObj) {
+	return GFMRV_OK;
+} 
