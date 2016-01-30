@@ -3,16 +3,18 @@
  *
  * Game entry point. Also manages update, rendering and switching states
  */
-#include <GFraMe/gfmAssert.h>
-#include <GFraMe/gfmError.h>
-#include <GFraMe/gframe.h>
-
 #include <base/assets.h>
 #include <base/config.h>
 #include <base/game_const.h>
 #include <base/game_ctx.h>
 #include <base/global.h>
 #include <base/input.h>
+
+#include <GFraMe/gfmAssert.h>
+#include <GFraMe/gfmError.h>
+#include <GFraMe/gframe.h>
+
+#include <ggj16/gamestate.h>
 
 /** Required by malloc() and free() */
 #include <stdlib.h>
@@ -30,14 +32,16 @@ gfmRV main_loop() {
     gfmRV rv;
 
     while (gfm_didGetQuitFlag(pGame->pCtx) != GFMRV_TRUE) {
-        if (pGame->nextState != 0) {
-            /* TODO Init the current state, if switching */
+        if (pGame->nextState != ST_NONE) {
+            /* Init the current state, if switching */
             switch (pGame->nextState) {
+                case ST_GAME: rv = gs_init(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
+            ASSERT(rv == GFMRV_OK, rv);
 
             pGame->curState = pGame->nextState;
-            pGame->nextState = 0;
+            pGame->nextState = ST_NONE;
         }
 
         /* Wait for an event */
@@ -54,7 +58,12 @@ gfmRV main_loop() {
             rv = gfm_getElapsedTime(&(pGame->elapsed), pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
 
-            /* TODO Update the current state */
+            /* Update the current state */
+            switch (pGame->curState) {
+                case ST_GAME: rv = gs_update(); break;
+                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+            }
+            ASSERT(rv == GFMRV_OK, rv);
 
             rv = gfm_fpsCounterUpdateEnd(pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
@@ -64,7 +73,12 @@ gfmRV main_loop() {
             rv = gfm_drawBegin(pGame->pCtx);
             ASSERT(rv == GFMRV_OK, rv);
 
-            /* TODO Render the current state */
+            /* Render the current state */
+            switch (pGame->curState) {
+                case ST_GAME: rv = gs_draw(); break;
+                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+            }
+            ASSERT(rv == GFMRV_OK, rv);
 
 #if defined(DEBUG)
             if (pGame->flags & DBG_RENDERQT) {
@@ -77,13 +91,15 @@ gfmRV main_loop() {
             ASSERT(rv == GFMRV_OK, rv);
         }
 
-        if (pGame->nextState != 0) {
-            /* TODO Clear the current state, if switching */
+        if (pGame->nextState != ST_NONE) {
+            /* Clear the current state, if switching */
             switch (pGame->curState) {
+                case ST_GAME: gs_free(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
+            ASSERT(rv == GFMRV_OK, rv);
 
-            pGame->curState = 0;
+            pGame->curState = ST_NONE;
         }
     }
 
@@ -184,6 +200,9 @@ int main(int argc, char *argv[]) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfm_setStateFrameRate(pGame->pCtx, pConfig->fps, pConfig->fps);
     ASSERT(rv == GFMRV_OK, rv);
+
+    /* TODO Switch to the proper first state */
+    pGame->nextState = ST_GAME;
 
     /* Initialize the main loop */
     rv = main_loop();

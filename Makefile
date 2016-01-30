@@ -6,6 +6,7 @@
           $(OBJDIR)/assets.o    \
           $(OBJDIR)/collision.o \
           $(OBJDIR)/config.o    \
+          $(OBJDIR)/gamestate.o \
           $(OBJDIR)/global.o    \
           $(OBJDIR)/input.o     \
           $(OBJDIR)/main.o

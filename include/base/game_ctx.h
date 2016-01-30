@@ -12,6 +12,8 @@
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
+#include <ggj16/state.h>
+
 /* == Types declaration ===================================================== */
 
 typedef struct stGameCtx gameCtx;
@@ -102,10 +104,10 @@ struct stGameCtx {
      * 'enum enGameFlags' documentation */
     gameFlags flags;
     /** Currently running state (e.g., ST_PLAYSTATE) */
-    int curState;
+    enum enState curState;
     /** If different from 'ST_NONE', the state to which the game must switch on
      * the end of this frame */
-    int nextState;
+    enum enState nextState;
     /** Time elapsed since the previous frame, in miliseconds */
     int elapsed;
 };

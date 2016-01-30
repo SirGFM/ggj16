@@ -31,3 +31,9 @@ bin/*
 
 # Debug files
 *.dSYM/
+
+# Swap
+*.swp
+
+# Binary assets
+*.xcf
