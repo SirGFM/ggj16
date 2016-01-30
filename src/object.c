@@ -16,13 +16,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int isAnyObjectDragging = GFMRV_FALSE;
-
 enum enObjectType
 {
 	object_ingredient,
 	object_cauldron
-};typedef enum enObjectType objectType;
+};
+typedef enum enObjectType objectType;
 
 
 struct stObject {
@@ -154,7 +153,6 @@ __ret:
  * @return            GFraMe return value
  */
 gfmRV object_update(object *pObj) {
-	object_handleDragNDrop(pObj);
     return gfmSprite_update(pObj->pSelf, pGame->pCtx);
 }
 
@@ -168,46 +166,39 @@ gfmRV object_draw(object *pObj) {
     return gfmSprite_draw(pObj->pSelf, pGame->pCtx);
 }
 
-/**
- * Handles drag and drop behaviour
- *
- * @param  [ in]pObj    The parsed object
- * @return            GFraMe return value
- */
-gfmRV object_handleDragNDrop(object *pObj) {
+gfmRV object_updateDrag(object *pObj) 
+{
+	int posX;
+	int posY;
 	gfmRV result = GFMRV_OK;
 	
 	gfmInput *pInput;
-	gfm_getInput(&pInput, pGame->pCtx);	
-	
-	if (pObj->isDragging) {
-			result = object_updateDrag(pInput, pObj);
-	}
-
-	return result;
-}
-
-gfmRV object_updateDrag(gfmInput *pInput, object *pObj) {
-	int posX;
-	int posY;
-	gfmRV result = gfmInput_getPointerPosition(&posX, &posY, pInput);
+	result = gfm_getInput(&pInput, pGame->pCtx);
+	result = gfmInput_getPointerPosition(&posX, &posY, pInput);
 	
 	gfmSprite_setPosition(pObj->pSelf, posX, posY);
 	
 	return result;
 }
 
-gfmRV object_initDrag(object *pObj) {	
+gfmRV object_initDrag(object *pObj) 
+{	
 	pObj->isDragging = GFMRV_TRUE;
-	isAnyObjectDragging = GFMRV_TRUE;
 	
 	return GFMRV_OK;
 }
 
-gfmRV object_isPointInside(object *pObj, int x, int y) {
+gfmRV object_isPointInside(object *pObj, int x, int y) 
+{
 	gfmRV result = 	(pObj->type == object_ingredient) ?
 							gfmSprite_isPointInside(pObj->pSelf, x, y) :
 							GFMRV_FALSE;
 							
-	return result;		
+	return result;
+}
+
+gfmRV object_drop(object *pObj)
+{
+	pObj->isDragging = GFMRV_FALSE;
+	return gfmSprite_setPosition(pObj->pSelf, pObj->initialPosX, pObj->initialPosY);
 }

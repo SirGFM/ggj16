@@ -57,20 +57,14 @@ gfmRV object_update(object *pObj);
  * @return            GFraMe return value
  */
 gfmRV object_draw(object *pObj);
-
-/**
- * Handles drag and drop behaviour
- *
- * @param  [ in]pObj    The parsed object
- * @return            GFraMe return value
- */
-gfmRV object_handleDragNDrop(object *pObj);
  
-gfmRV object_updateDrag(gfmInput *pInput, object *pObj);
+gfmRV object_updateDrag(object *pObj);
  
 gfmRV object_initDrag(object *pObj);
 
 gfmRV object_isPointInside(object *pObj, int x, int y);
+
+gfmRV object_drop(object *pObj);
 
 #endif /* __OBJECT_H__ */
 
