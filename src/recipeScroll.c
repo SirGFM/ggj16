@@ -32,6 +32,8 @@ struct stRecipeScroll {
     double recipeSpeed;
     /** Recipe's horizontal position */
     int recipeX;
+    /** Number of items on the recipe */
+    int numItems;
 };
 
 /**
@@ -116,18 +118,19 @@ __ret:
  */
 gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
         double speed) {
+    /* Recipe's tile data */
+    int *pData;
     /** GFraMe return value */
     gfmRV rv;
     /** Iterate through the items */
     int i;
-    /* Recipe's tile data */
-    int *pData;
 
     /* Update the visible recipe */
     rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 2/*w*/,
             length * 2/*h*/, 352/*defTile*/); 
     rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
+    pScroll->numItems = length;
 
     i = 0;
     while (i < length) {
@@ -177,8 +180,12 @@ gfmRV recipeScroll_isValid(recipeScroll *pScroll) {
  * @return              GFraMe return value
  */
 gfmRV recipeScroll_update(recipeScroll *pScroll) {
+    /* Recipe's tile data */
+    int *pData;
     /** GFraMe return value */
     gfmRV rv;
+    /** Iterate through the items */
+    int i;
 
     /* Sanitize arguments */
     ASSERT(pScroll, GFMRV_ARGUMENTS_BAD);
@@ -190,6 +197,34 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
             (int)pScroll->recipeY);
     rv = gfmTilemap_setPosition(pScroll->pRecipe, pScroll->recipeX, (int)pScroll->recipeY);
     ASSERT(rv == GFMRV_OK, rv);
+
+    /* Clear the previous highlight in a lazy way */
+    rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
+    ASSERT(rv == GFMRV_OK, rv);
+    i = 0;
+    while (i < pScroll->numItems) {
+        pData[i * 4 + 0] &= 0xfffffffe;
+        if (pData[i * 4 + 1] != -1) {
+            pData[i * 4 + 1] &= 0xfffffffe;
+        }
+        i++;
+    }
+    /* Highlight the current item */
+    if (pScroll->recipeY < 44) {
+        /** Current active tile */
+        int tile;
+        /** Position within the valid area */
+        int pos;
+
+        tile = (int)(44 - pScroll->recipeY) / 16;
+        pos  = (int)(44 - pScroll->recipeY) % 16;
+        if (pos >= 4 && pos < 14 && tile < pScroll->numItems) {
+            pData[tile *  4 + 0] |= 1;
+            pData[tile *  4 + 1] |= 1;
+
+            /* TODO Set the a item is expected */
+        }
+    }
 
     rv = gfmTilemap_update(pScroll->pRecipe, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
