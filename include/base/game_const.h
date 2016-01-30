@@ -62,6 +62,12 @@
 
 /** Texture's transparent color */
 #define COLORKEY        0xFF00FF
+/** Quadtree position */
+#define QT_X            -8
+#define QT_Y            -8
+/** Quadtree dimensions */
+#define QT_WIDTH        V_WIDTH + 16
+#define QT_HEIGHT       V_HEIGHT + 16
 /** Maximum number of times the quadtree will subdivide */
 #define QT_MAX_DEPTH    6
 /** Number of nodes required for the quadtree to subdivide */

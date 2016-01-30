@@ -26,12 +26,12 @@ struct stRecipeScroll {
     gfmTilemap *pRecipe;
     /** Mask that hides the incoming items */
     gfmTilemap *pMask;
+    /** Recipe's vertical position (must be manually integrated) */
+    double recipeY;
+    /** Recipe's vertical speed */
+    double recipeSpeed;
     /** Recipe's horizontal position */
     int recipeX;
-    /** Recipe's vertical position (must be manually integrated) */
-    int recipeY;
-    /** Recipe's vertical speed */
-    int recipeSpeed;
 };
 
 /**
@@ -88,6 +88,9 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
             "map/scrollMask.gfm", dictStr, dictType, dictLen);
     ASSERT(rv == GFMRV_OK, rv);
 
+    rv = gfmTilemap_setPosition(pScroll->pMask, 15 * 8, 0);
+    ASSERT(rv == GFMRV_OK, rv);
+
     pScroll->recipeX = 16 * 8 - 4;
     pScroll->recipeY = 8 * 8;
     pScroll->recipeSpeed = 4;
@@ -108,14 +111,42 @@ __ret:
  * @param  [ in]pScroll The object
  * @param  [ in]pItems  List of types in this recipe
  * @param  [ in]length  Number of entries in the types list
+ * @param  [ in]speed   Recipe' scrolling speed (in pixels-per-second)
  * @return              GFraMe return value
  */
-gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length) {
+gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
+        double speed) {
+    /** GFraMe return value */
+    gfmRV rv;
+    /** Iterate through the items */
+    int i;
+    /* Recipe's tile data */
+    int *pData;
+
+    /* Update the visible recipe */
+    rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 2/*w*/,
+            length * 2/*h*/, 352/*defTile*/); 
+    rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    i = 0;
+    while (i < length) {
+        /** TODO Load the correct sprite and list */
+        pData[i * 4 + 0] = 352;
+        pData[i * 4 + 1] = -1;
+        pData[i * 4 + 2] = -1;
+        pData[i * 4 + 3] = -1;
+        i++;
+    }
+
+    /* Reset the recipe's position */
     pScroll->recipeX = 16 * 8 - 4;
     pScroll->recipeY = 8 * 8;
-    pScroll->recipeSpeed = 4;
+    pScroll->recipeSpeed = speed;
 
-    return GFMRV_OK;
+    rv = GFMRV_OK;
+__ret:
+    return rv;
 }
 
 /**
@@ -148,6 +179,22 @@ gfmRV recipeScroll_isValid(recipeScroll *pScroll) {
 gfmRV recipeScroll_update(recipeScroll *pScroll) {
     /** GFraMe return value */
     gfmRV rv;
+
+    /* Sanitize arguments */
+    ASSERT(pScroll, GFMRV_ARGUMENTS_BAD);
+
+    /* Integrate the recipe's position */
+    pScroll->recipeY += pScroll->recipeSpeed *
+            ((double)pGame->elapsed / 1000.0);
+    rv = gfmTilemap_setPosition(pScroll->pRecipe, pScroll->recipeX,
+            (int)pScroll->recipeY);
+    rv = gfmTilemap_setPosition(pScroll->pRecipe, pScroll->recipeX, (int)pScroll->recipeY);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmTilemap_update(pScroll->pRecipe, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmTilemap_update(pScroll->pMask, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:

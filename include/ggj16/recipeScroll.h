@@ -37,9 +37,11 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll);
  * @param  [ in]pScroll The object
  * @param  [ in]pTypes  List of items in this recipe
  * @param  [ in]length  Number of entries in the items list
+ * @param  [ in]speed   Recipe' scrolling speed (in pixels-per-second)
  * @return              GFraMe return value
  */
-gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length);
+gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
+        double speed);
 
 /**
  * Check if a item is the expected one. If it's not, an error flag will be set!

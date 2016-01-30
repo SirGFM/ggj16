@@ -126,7 +126,7 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
     /* TODO Load level from generator */
     int pData[] = {0, 0, 0, 0};
-    rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int));
+    rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int), -16);
     ASSERT(rv == GFMRV_OK, rv);
 
     pGame->pState = pState;
@@ -156,6 +156,14 @@ gfmRV gs_update() {
     ASSERT(pGame->pState != 0, GFMRV_INTERNAL_ERROR);
     pState = (gamestate*)pGame->pState;
 
+    /* Initialize the quadtree */
+    rv = gfmQuadtree_initRoot(pGlobal->pQt, QT_X, QT_Y, QT_WIDTH, QT_HEIGHT,
+            QT_MAX_DEPTH, QT_MAX_NODES);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Update the scroller */
+    rv = recipeScroll_update(pState->pRecipe);
+    ASSERT(rv == GFMRV_OK, rv);
     /* Update the tilemap (e.g., if it's animated) */
     rv = gfmTilemap_update(pState->pBackground, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
@@ -181,9 +189,13 @@ gfmRV gs_draw() {
     ASSERT(pGame->pState != 0, GFMRV_INTERNAL_ERROR);
     pState = (gamestate*)pGame->pState;
 
-    /* Draw the tilemap */
+    /* Draw the background */
     rv = gfmTilemap_draw(pState->pBackground, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    /* Draw the scroll */
+    rv = recipeScroll_draw(pState->pRecipe);
+    ASSERT(rv == GFMRV_OK, rv);
+
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
 
