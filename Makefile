@@ -6,9 +6,11 @@
           $(OBJDIR)/assets.o    \
           $(OBJDIR)/collision.o \
           $(OBJDIR)/config.o    \
+          $(OBJDIR)/gamestate.o \
           $(OBJDIR)/global.o    \
           $(OBJDIR)/input.o     \
-          $(OBJDIR)/main.o
+          $(OBJDIR)/main.o      \
+          $(OBJDIR)/object.o
 #=======================================================================
 
 #=======================================================================
@@ -50,6 +52,11 @@
 #=======================================================================
   OS := $(shell uname)
   ifeq ($(OS), MINGW32_NT-6.1)
+    OS := Win
+#   Also, set the icon
+    ICON = $(WINICON)
+  endif
+  ifeq ($(OS), MINGW32_NT-6.2)
     OS := Win
 #   Also, set the icon
     ICON = $(WINICON)

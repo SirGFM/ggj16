@@ -12,6 +12,8 @@
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
+#include <ggj16/state.h>
+
 /* == Types declaration ===================================================== */
 
 typedef struct stGameCtx gameCtx;
@@ -98,14 +100,16 @@ typedef enum enGameFlags gameFlags;
 struct stGameCtx {
     /** The framework's context */
     gfmCtx *pCtx;
+    /** The currently running state (if any) */
+    void *pState;
     /** Binary flags for the game (e.g., whether it's in fullscreen mode); Check
      * 'enum enGameFlags' documentation */
     gameFlags flags;
     /** Currently running state (e.g., ST_PLAYSTATE) */
-    int curState;
+    enum enState curState;
     /** If different from 'ST_NONE', the state to which the game must switch on
      * the end of this frame */
-    int nextState;
+    enum enState nextState;
     /** Time elapsed since the previous frame, in miliseconds */
     int elapsed;
 };
@@ -114,6 +118,10 @@ struct stGameCtx {
 struct stGfxCtx {
     /** 8x8 spriteset of the main texture */
     gfmSpriteset *pSset8x8;
+    /** 16x16 spriteset of the main texture */
+    gfmSpriteset *pSset16x16;
+    /** 32x32 spriteset of the main texture */
+    gfmSpriteset *pSset32x32;
     /** Handle of the main texture atlas */
     int texHandle;
 };
