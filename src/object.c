@@ -115,6 +115,22 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
         tile = 352;
         pSset = pGfx->pSset8x8;
     }
+    else if (strcmp(pName, "bat_wing") == 0) {
+        tile = 354;
+        pSset = pGfx->pSset8x8;
+    }
+    else if (strcmp(pName, "eye") == 0) {
+        tile = 356;
+        pSset = pGfx->pSset8x8;
+    }
+    else if (strcmp(pName, "web") == 0) {
+        tile = 358;
+        pSset = pGfx->pSset8x8;
+    }
+    else if (strcmp(pName, "phoenix_feather") == 0) {
+        tile = 360;
+        pSset = pGfx->pSset8x8;
+    }
     type = 0;
 
     /** Initialize the sprite */

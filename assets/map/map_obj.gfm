@@ -3,7 +3,7 @@ obj rat_tail 50 38 8 8
 obj rat_tail 62 38 8 8
 obj rat_tail 74 38 8 8
 obj rat_tail 86 38 8 8
-obj rat_tail 21 40 8 8
-obj rat_tail 21 56 8 8
-obj rat_tail 21 72 8 8
-obj rat_tail 21 88 8 8
+obj phoenix_feather 20 88 8 8
+obj web 20 72 8 8
+obj eye 20 56 8 8
+obj bat_wing 20 40 8 8
