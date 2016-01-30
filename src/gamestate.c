@@ -9,13 +9,17 @@
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
+#include <GFraMe/gfmGenericArray.h>
 #include <GFraMe/gfmParser.h>
 #include <GFraMe/gfmTilemap.h>
 
 #include <ggj16/gamestate.h>
+#include <ggj16/object.h>
 
 #include <stdlib.h>
 #include <string.h>
+
+gfmGenArr_define(object);
 
 #define gfmTilemap_loadfStatic(pTMap, pCtx, pFilename, pDictNames, pDictTypes, dictLen) \
     gfmTilemap_loadf(pTMap, pCtx, pFilename, sizeof(pFilename) - 1, pDictNames, pDictTypes, dictLen)
@@ -23,6 +27,8 @@
 struct stGamestate {
     /** The background */
     gfmTilemap *pBackground;
+    /** List of objects */
+    gfmGenArr_var(object, pObjects);
 };
 typedef struct stGamestate gamestate;
 
@@ -51,10 +57,14 @@ void gs_free() {
  * Initialize the game state (alloc anything needed, load first level and so on)
  */
 gfmRV gs_init() {
+    /** Parse the objects in the map */
+    gfmParser *pParser;
     /** GFraMe return value */
     gfmRV rv;
     /** The new state */
     gamestate *pState;
+
+    pParser = 0;
 
     /* Check that the state is correct and there's none loaded */
     ASSERT(pGame->nextState == ST_GAME, GFMRV_INTERNAL_ERROR);
@@ -72,6 +82,8 @@ gfmRV gs_init() {
     rv = gfmTilemap_loadfStatic(pState->pBackground, pGame->pCtx,
             "map/map_map.gfm", dictStr, dictType, dictLen);
     ASSERT(rv == GFMRV_OK, rv);
+
+    /* Load all objects */
 
     pGame->pState = pState;
     rv = GFMRV_OK;
@@ -103,6 +115,8 @@ gfmRV gs_update() {
     /* Update the tilemap (e.g., if it's animated) */
     rv = gfmTilemap_update(pState->pBackground, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    /* Update all objects */
+    gfmGenArr_callAll(pState->pObjects, object_update);
 
     rv = GFMRV_OK;
 __ret:
@@ -126,6 +140,8 @@ gfmRV gs_draw() {
     /* Draw the tilemap */
     rv = gfmTilemap_draw(pState->pBackground, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+    /* Draw all objects */
+    gfmGenArr_callAll(pState->pObjects, object_draw);
 
     rv = GFMRV_OK;
 __ret:
