@@ -131,6 +131,10 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
         tile = 360;
         pSset = pGfx->pSset8x8;
     }
+    else if (strcmp(pName, "monkey_ear") == 0) {
+        tile = 362;
+        pSset = pGfx->pSset8x8;
+    }
     type = 0;
 
     /** Initialize the sprite */
