@@ -1,9 +1,9 @@
 obj cauldron 70 118 32 32
 obj rat_tail 50 38 8 8
-obj rat_tail 62 38 8 8
-obj rat_tail 74 38 8 8
 obj phoenix_feather 20 88 8 8
 obj web 20 72 8 8
 obj eye 20 56 8 8
 obj bat_wing 20 40 8 8
 obj monkey_ear 86 38 8 8
+obj bone 74 38 8 8
+obj mushroom 62 38 8 8

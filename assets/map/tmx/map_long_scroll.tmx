@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="8" tileheight="8" nextobjectid="20">
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="8" tileheight="8" nextobjectid="18">
  <tileset firstgid="1" name="8x8" tilewidth="8" tileheight="8" tilecount="1024" columns="32">
   <image source="../../gfx/atlas.bmp" trans="ff00ff" width="256" height="256"/>
  </tileset>
@@ -9,13 +9,13 @@
  <layer name="map" width="20" height="15">
   <data encoding="csv">
 66,66,66,66,65,65,65,65,65,65,65,65,65,65,65,65,66,66,66,66,
-66,66,66,66,65,65,65,65,65,65,65,65,65,73,139,139,74,75,76,66,
-66,66,98,99,164,70,65,65,65,65,65,65,72,105,139,139,139,139,140,66,
-66,129,130,131,164,102,65,65,65,65,65,65,104,65,106,77,78,78,139,66,
-66,257,162,163,133,134,135,135,135,135,135,135,136,65,138,109,107,110,108,66,
-66,257,194,131,165,166,166,166,166,166,166,166,168,65,139,141,141,142,139,66,
-66,257,162,163,164,65,65,65,65,65,65,65,65,137,139,139,139,139,140,66,
-66,257,194,131,164,65,65,65,65,65,65,65,65,169,139,170,139,171,172,66,
+66,66,66,66,65,65,65,65,65,65,65,65,73,139,139,139,74,75,76,66,
+66,66,98,99,164,70,65,65,65,65,65,72,105,139,139,139,139,139,140,66,
+66,129,130,131,164,102,65,65,65,65,65,104,65,106,77,77,78,78,139,66,
+66,257,162,163,133,134,135,135,135,135,135,136,65,138,109,107,107,110,108,66,
+66,257,194,131,165,166,166,166,166,166,166,168,65,139,141,141,141,142,139,66,
+66,257,162,163,164,65,65,65,65,65,65,65,137,139,139,139,139,139,140,66,
+66,257,194,131,164,65,65,65,65,65,65,65,169,139,170,139,139,171,172,66,
 66,257,162,163,164,65,65,65,65,65,65,65,65,65,65,65,66,66,66,66,
 66,257,194,131,164,65,65,65,65,65,65,65,65,65,65,65,66,66,66,66,
 66,257,162,163,164,65,65,65,65,65,65,65,65,65,65,65,66,66,66,66,
@@ -27,13 +27,13 @@
  </layer>
  <objectgroup name="obj">
   <object id="1" name="cauldron" type="cauldron" gid="1049" x="70" y="118" width="32" height="32"/>
-  <object id="3" name="rat_tail" type="rat_tail" gid="353" x="50" y="38" width="8" height="8"/>
+  <object id="3" name="rat_tail_0" type="rat_tail" gid="353" x="47" y="39" width="8" height="8"/>
+  <object id="5" name="rat_tail_1" type="rat_tail" gid="353" x="58" y="39" width="8" height="8"/>
+  <object id="6" name="rat_tail_2" type="rat_tail" gid="353" x="69" y="39" width="8" height="8"/>
   <object id="12" name="phoenix_feather" type="phoenix_feather" gid="361" x="20" y="88" width="8" height="8"/>
   <object id="13" name="web" type="web" gid="359" x="20" y="72" width="8" height="8"/>
   <object id="14" name="eye" type="eye" gid="357" x="20" y="56" width="8" height="8"/>
   <object id="15" name="bat_wing" type="bat_wing" gid="355" x="20" y="40" width="8" height="8"/>
-  <object id="17" name="monkey_ear" type="monkey_ear" gid="363" x="86" y="38" width="8" height="8"/>
-  <object id="18" name="bone" type="bone" gid="365" x="74" y="38" width="8" height="8"/>
-  <object id="19" name="mushroom" type="mushroom" gid="367" x="62" y="38" width="8" height="8"/>
+  <object id="17" name="monkey_ear" type="monkey_ear" gid="363" x="80" y="39" width="8" height="8"/>
  </objectgroup>
 </map>

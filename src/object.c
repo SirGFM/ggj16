@@ -135,6 +135,14 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
         tile = 362;
         pSset = pGfx->pSset8x8;
     }
+    else if (strcmp(pName, "bone") == 0) {
+        tile = 364;
+        pSset = pGfx->pSset8x8;
+    }
+    else if (strcmp(pName, "mushroom") == 0) {
+        tile = 366;
+        pSset = pGfx->pSset8x8;
+    }
     type = 0;
 
     /** Initialize the sprite */
