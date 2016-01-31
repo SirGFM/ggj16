@@ -11,7 +11,8 @@
           $(OBJDIR)/input.o        \
           $(OBJDIR)/main.o         \
           $(OBJDIR)/object.o       \
-          $(OBJDIR)/recipeScroll.o
+          $(OBJDIR)/recipeScroll.o \
+          $(OBJDIR)/type.o
 #=======================================================================
 
 #=======================================================================

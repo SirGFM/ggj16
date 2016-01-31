@@ -12,6 +12,7 @@
 #include <GFraMe/gfmSpriteset.h>
 
 #include <ggj16/object.h>
+#include <ggj16/type.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -93,57 +94,37 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     /** Sprite's dimensions */
     int height, width;
     /** Sprite's tile */
-    int tile, type;
+    int tile;
+    /** Type of the current item */
+    itemType type;
 
-    /** Get the object's position, dimensions and type */
+    /* Get the object's position, dimensions and type */
     rv = gfmParser_getPos(&x, &y, pParser);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmParser_getDimensions(&width, &height, pParser);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmParser_getIngameType(&pName, pParser);
     ASSERT(rv == GFMRV_OK, rv);
+    /* Convert the type to its internal type */
+    rv = type_getHandle(&type, pName);
+    ASSERT(rv == GFMRV_OK, rv);
     /** Adjust the vertical position to the sprite's top */
     y -= height;
     /* Set the tile and spriteset according to the type */
-    if (strcmp(pName, "cauldron") == 0) {
+    if (type == T_CAULDRON) {
         width = 20;
         height = 18;
         tile = 24;
         pSset = pGfx->pSset32x32;
     }
-    else if (strcmp(pName, "rat_tail") == 0) {
-        tile = 352;
+    else {
+        /* All types were set sequentially on the tile set, with the first on
+         * tile 352. Since each one spawns two tiles (the normal and a
+         * highlighted version), retrieveing the tile is a simple matter of
+         * calculating the correct index */
+        tile = 352 + (type - T_RAT_TAIL) * 2;
         pSset = pGfx->pSset8x8;
     }
-    else if (strcmp(pName, "bat_wing") == 0) {
-        tile = 354;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "eye") == 0) {
-        tile = 356;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "web") == 0) {
-        tile = 358;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "phoenix_feather") == 0) {
-        tile = 360;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "monkey_ear") == 0) {
-        tile = 362;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "bone") == 0) {
-        tile = 364;
-        pSset = pGfx->pSset8x8;
-    }
-    else if (strcmp(pName, "mushroom") == 0) {
-        tile = 366;
-        pSset = pGfx->pSset8x8;
-    }
-    type = 0;
 
     /** Initialize the sprite */
     rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset, 0 /* offx */,
