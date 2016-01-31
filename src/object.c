@@ -94,8 +94,6 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     int x, y;
     /** Sprite's dimensions */
     int height, width;
-    /** Sprite's offset from the origin */
-    int offx, offy;
     /** Sprite's tile */
     int tile;
     /** Type of the current item */
@@ -113,27 +111,17 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     ASSERT(rv == GFMRV_OK, rv);
     /** Adjust the vertical position to the sprite's top */
     y -= height;
-    /* Set the tile and spriteset according to the type */
-    if (type == T_CAULDRON) {
-        width = 20;
-        height = 18;
-        tile = 8;
-        pSset = pGfx->pSset64x64;
-        offx = -22;
-        offy = -19;
-    }
-    else {
-        /* All types were set sequentially on the tile set, with the first on
-         * tile 352. Since each one spawns two tiles (the normal and a
-         * highlighted version), retrieveing the tile is a simple matter of
-         * calculating the correct index */
-        tile = 352 + (type - T_RAT_TAIL) * 2;
-        pSset = pGfx->pSset8x8;
-    }
+    /* Set the tile and spriteset according to the type.
+     * All types were set sequentially on the tile set, with the first on
+     * tile 352. Since each one spawns two tiles (the normal and a
+     * highlighted version), retrieveing the tile is a simple matter of
+     * calculating the correct index */
+    tile = 352 + (type - T_RAT_TAIL) * 2;
+    pSset = pGfx->pSset8x8;
 
     /** Initialize the sprite */
-    rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset, offx, offy,
-            pObj, type);
+    rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset,  0 /* offx */,
+            0 /* offy */, pObj, type);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pObj->pSelf, tile);
     ASSERT(rv == GFMRV_OK, rv);
