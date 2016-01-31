@@ -7,6 +7,7 @@
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
+#include <GFraMe/gfmInput.h>
 #include <GFraMe/gfmParser.h>
 #include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmSpriteset.h>
@@ -20,6 +21,14 @@
 struct stObject {
     /** The object's sprite */
     gfmSprite *pSelf;
+    /** Original horizontal position */
+    int originX;
+    /** Original vertical position */
+    int originY;
+    /** Offset from the mouse */
+    int offX;
+    /** Offset from the mouse */
+    int offY;
 };
 static int pCauldronAnim[] = {9, 10, 11, 12};
 
@@ -134,6 +143,9 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
         ASSERT(rv == GFMRV_OK, rv);
     }
 
+    pObj->originX = x;
+    pObj->originY = y;
+
     rv = GFMRV_OK;
 __ret:
     return GFMRV_OK;
@@ -146,7 +158,82 @@ __ret:
  * @return            GFraMe return value
  */
 gfmRV object_update(object *pObj) {
-    return gfmSprite_update(pObj->pSelf, pGame->pCtx);
+    /** Framework's input context */
+    gfmInput *pInput;
+    /** GFraMe return value */
+    gfmRV rv;
+    /** Current mouse position on the screen */
+    int mouseX, mouseY;
+    /** The sprite's current tile */
+    int tile;
+
+    /* Retrieve the current mouse position */
+    rv = gfm_getInput(&pInput, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmInput_getPointerPosition(&mouseX, &mouseY, pInput);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Retrieve the current tile */
+    rv = gfmSprite_getFrame(&tile, pObj->pSelf);
+    ASSERT(rv == GFMRV_OK, rv);
+    /* Clear highlight */
+    rv = gfmSprite_setFrame(pObj->pSelf, tile & 0xfffffffe);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Check if it's inside */
+    if (!pGlobal->isDragging) {
+        rv = gfmSprite_isPointInside(pObj->pSelf, mouseX, mouseY);
+        ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
+        if (rv == GFMRV_TRUE) {
+            /* Highlight it */
+            rv = gfmSprite_setFrame(pObj->pSelf, tile | 1);
+            ASSERT(rv == GFMRV_OK, rv);
+            /* Check if it should be dragged */
+            if ((pButton->click.state & gfmInput_justPressed) ==
+                    gfmInput_justPressed) {
+                /** The sprite's position */
+                int x, y;
+
+                /* Drag it */
+                pGlobal->isDragging = 1;
+                pGlobal->pDragging = pObj;
+                /* Set its offset to the mouse */
+                rv = gfmSprite_getPosition(&x, &y, pObj->pSelf);
+                ASSERT(rv == GFMRV_OK, rv);
+                pObj->offX = x - mouseX;
+                pObj->offY = y - mouseY;
+            }
+        }
+    }
+
+    /* Check if the object being dragged it this */
+    if (pGlobal->pDragging == pObj) {
+        /* Check if it should be released */
+        if ((pButton->click.state & gfmInput_justReleased) ==
+                gfmInput_justReleased) {
+                pGlobal->isDragging = 0;
+                pGlobal->pDragging = 0;
+
+                /* TODO Check if it's over the cauldron */
+
+                rv = gfmSprite_setPosition(pObj->pSelf, pObj->originX,
+                        pObj->originY);
+                ASSERT(rv == GFMRV_OK, rv);
+        }
+        else {
+            /* Update its position */
+            rv = gfmSprite_setPosition(pObj->pSelf, pObj->offX + mouseX,
+                    pObj->offY + mouseY);
+                ASSERT(rv == GFMRV_OK, rv);
+        }
+    }
+
+    rv = gfmSprite_update(pObj->pSelf, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
 }
 
 /**

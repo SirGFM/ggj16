@@ -81,6 +81,7 @@ gfmRV input_init() {
     ASSERT(rv == GFMRV_OK, rv)
 
     ADD_KEY(fullscreen);
+    ADD_KEY(click);
 #if defined(DEBUG)
     ADD_KEY(qt);
 #endif
@@ -97,6 +98,7 @@ gfmRV input_init() {
     ASSERT(rv == GFMRV_OK, rv)
 
     BIND_KEY(fullscreen, gfmKey_f12);
+    BIND_KEY(click, gfmPointer_button);
 #if defined(DEBUG)
     BIND_KEY(qt, gfmKey_f11);
 #endif

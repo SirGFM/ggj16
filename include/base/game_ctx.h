@@ -13,6 +13,7 @@
 #include <GFraMe/core/gfmAudio_bkend.h>
 
 #include <ggj16/gesture.h>
+#include <ggj16/object.h>
 #include <ggj16/state.h>
 
 /* == Types declaration ===================================================== */
@@ -154,6 +155,8 @@ struct stButton {
 struct stButtonCtx {
     /** Button to switch between fullscreen and windowed mode */
     button fullscreen;
+    /** Mouse button */
+    button click;
 #if defined(DEBUG)
     /** Add button to switch rendering of the quadtree */
     button qt;
@@ -190,6 +193,10 @@ struct stGlobalCtx {
     gfmQuadtreeRoot *pQt;
     /** Gesture recognizer */
     gesture *pGesture;
+    /** Current object being dragger */
+    object *pDragging;
+    /** Whether an object is being dragged */
+    int isDragging;
     /* TODO Add any other globally accessible variable (e.g., a tilemap) */
 };
 
