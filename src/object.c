@@ -30,7 +30,6 @@ struct stObject {
 	objectType type;
 	int initialPosX;
 	int initialPosY;
-	int isDragging;
 };
 
 /**
@@ -181,13 +180,6 @@ gfmRV object_updateDrag(object *pObj)
 	return result;
 }
 
-gfmRV object_initDrag(object *pObj) 
-{	
-	pObj->isDragging = GFMRV_TRUE;
-	
-	return GFMRV_OK;
-}
-
 gfmRV object_isPointInside(object *pObj, int x, int y) 
 {
 	gfmRV result = 	(pObj->type == object_ingredient) ?
@@ -199,6 +191,14 @@ gfmRV object_isPointInside(object *pObj, int x, int y)
 
 gfmRV object_drop(object *pObj)
 {
-	pObj->isDragging = GFMRV_FALSE;
 	return gfmSprite_setPosition(pObj->pSelf, pObj->initialPosX, pObj->initialPosY);
+}
+
+void object_setHighlight(object *pObj, gfmRV enable)
+{
+	int frame;
+	gfmSprite_getFrame(&frame, pObj->pSelf);
+	
+	 int resultFrame = (enable == GFMRV_TRUE) ? ++frame : --frame;
+	gfmSprite_setFrame(pObj->pSelf, resultFrame);
 }

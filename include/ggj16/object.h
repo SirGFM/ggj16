@@ -59,12 +59,12 @@ gfmRV object_update(object *pObj);
 gfmRV object_draw(object *pObj);
  
 gfmRV object_updateDrag(object *pObj);
- 
-gfmRV object_initDrag(object *pObj);
 
 gfmRV object_isPointInside(object *pObj, int x, int y);
 
 gfmRV object_drop(object *pObj);
+
+void object_setHighlight(object *pObj, gfmRV enable);
 
 #endif /* __OBJECT_H__ */
 

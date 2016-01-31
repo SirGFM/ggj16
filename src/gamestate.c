@@ -187,53 +187,77 @@ __ret:
 }
 
 object *pCurrentDraggedObject = NULL;
+object *pCurrentHighlightedObject = NULL;
 
 gfmRV gs_updateObjectsInteraction() 
 {
 	gfmRV result = GFMRV_OK;
+	
 	gfmInput *pInput;
 	int mouseX;
 	int mouseY;
 	result = gfm_getInput(&pInput, pGame->pCtx);	
 	result = gfmInput_getPointerPosition(&mouseX, &mouseY, pInput);
 	
+	object *pHitObject = gs_checkMouseOverObjects(mouseX, mouseY);
+	
     if ((pButton->mouse.state & gfmInput_pressed) == gfmInput_pressed) 
 	{
 		if (pCurrentDraggedObject == NULL)
 		{
-			gamestate *pState = (gamestate*)pGame->pState;		
-			int totalObjects = gfmGenArr_getUsed(pState->pObjects);
-			int i;
-			object *pObj = NULL;
-			for (i = 0; i < totalObjects; i++) 
-			{
-				pObj = gfmGenArr_getObject(pState->pObjects, i);
-				
-				if 
-				(
-					object_isPointInside(pObj, mouseX, mouseY) == GFMRV_TRUE
-				) 
-				{
-					pCurrentDraggedObject = pObj;
-					object_initDrag(pObj);
-					break;
-				}
-			}
+			pCurrentDraggedObject = pHitObject;
 		}
 		else
 		{
-			object_updateDrag(pCurrentDraggedObject);
+			result = object_updateDrag(pCurrentDraggedObject);
 		}
 	}
-	else if 
-	(
-		(pCurrentDraggedObject != NULL) &&
-		(pButton->mouse.state & gfmInput_released) == gfmInput_released
-	)
+	else if (pCurrentDraggedObject != NULL)
 	{
-		object_drop(pCurrentDraggedObject);
+		result = object_drop(pCurrentDraggedObject);
 		pCurrentDraggedObject = NULL;
-	}	
+	}
+	else
+	{
+		gs_checkHighLight(pHitObject);
+	}
 
 	return result;
+}
+
+object *gs_checkMouseOverObjects(int mouseX, int mouseY)
+{
+	object *pResult = NULL;
+	gamestate *pState = (gamestate*)pGame->pState;		
+	int totalObjects = gfmGenArr_getUsed(pState->pObjects);
+	int i;
+	object *pObj = NULL;
+	for (i = 0; i < totalObjects; i++) 
+	{
+		pObj = gfmGenArr_getObject(pState->pObjects, i);
+		if (object_isPointInside(pObj, mouseX, mouseY) == GFMRV_TRUE) 
+		{
+			pResult = pObj;
+			break;
+		}
+	}
+	
+	return pResult;
+}
+
+void gs_checkHighLight(object *pHitObject)
+{
+	if (pCurrentHighlightedObject == NULL)
+	{
+		if (pHitObject != NULL)
+		{
+			object_setHighlight(pHitObject, GFMRV_TRUE);
+			pCurrentHighlightedObject = pHitObject;
+		}
+	}
+	else if (pHitObject == NULL)
+	{
+		object_setHighlight(pCurrentHighlightedObject, GFMRV_FALSE);
+		pCurrentHighlightedObject = pHitObject;
+	}
 }
