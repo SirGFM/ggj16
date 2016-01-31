@@ -36,6 +36,10 @@ struct stRecipeScroll {
     int recipeX;
     /** Number of items on the recipe */
     int numItems;
+    /* Flag when errors happen */
+    gfmRV error;
+    /* Current expected type */
+    itemType expected;
 };
 
 /**
@@ -150,6 +154,9 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
     pScroll->recipeY = 8 * 8;
     pScroll->recipeSpeed = speed;
 
+    pScroll->expected = T_NONE;
+    pScroll->error = GFMRV_FALSE;
+
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -162,18 +169,24 @@ __ret:
  * @param  [ in]item    The checking item
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
-gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, int item) {
-    return GFMRV_OK;
+gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item) {
+    if (item == pScroll->expected) {
+        return GFMRV_TRUE;
+    }
+    else {
+        /* TODO Set error FLAG */
+        return GFMRV_FALSE;
+    }
 }
 
 /**
- * Check if the scroller didn't detect any error (e.g., skipping an item).
+ * Check if any input onto the scroller failed (e.g., skipping an item).
  *
  * @param  [ in]pScroll The object
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
-gfmRV recipeScroll_isValid(recipeScroll *pScroll) {
-    return GFMRV_OK;
+gfmRV recipeScroll_didFail(recipeScroll *pScroll) {
+    return pScroll->error;
 }
 
 /**
@@ -209,7 +222,6 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
         pData[i * 2 + 0] &= 0xfffffffe;
         i++;
     }
-    /* Highlight the current item */
     if (pScroll->recipeY < 44) {
         /** Current active tile */
         int tile;
@@ -218,16 +230,29 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
 
         tile = (int)(44 - pScroll->recipeY) / 16;
         pos  = (int)(44 - pScroll->recipeY) % 16;
-        if (pos == 0) {
-            /* First frame when the item can be "done" */
-            /* TODO Set expected item */
-            /* TODO Clear motion */
+
+        /* Check if it's still a valid item */
+        if (tile < pScroll->numItems) {
+            if (pos == 0) {
+                /* First frame when the item can be "done" */
+
+                /* Set expected item */
+                pScroll->expected  = (pData[tile * 2 + 0] - 352) / 2 +
+                        T_RAT_TAIL;
+                /* TODO Clear motion */
+            }
+            else if (pos >= 4 && pos < 14) {
+                /* Highlight the current item */
+                pData[tile *  2 + 0] |= 1;
+            }
+            else if (pos == 15) {
+                /* TODO If item still hasn't been "done", the player failed */
+                /* NOTE: If item is T_WAIT, the input must be NONE! */
+                pScroll->expected  = T_NONE;
+            }
         }
-        else if (pos >= 4 && pos < 14 && tile < pScroll->numItems) {
-            pData[tile *  2 + 0] |= 1;
-        }
-        else if (pos == 15) {
-            /* If item still hasn't been "done", the player failed */
+        else {
+            /* TODO Set finished */
         }
     }
 

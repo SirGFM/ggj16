@@ -52,15 +52,15 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
  * @param  [ in]item    The checking item
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
-gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, int item);
+gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item);
 
 /**
- * Check if the scroller didn't detect any error (e.g., skipping an item).
+ * Check if any input onto the scroller failed (e.g., skipping an item).
  *
  * @param  [ in]pScroll The object
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
-gfmRV recipeScroll_isValid(recipeScroll *pScroll);
+gfmRV recipeScroll_didFail(recipeScroll *pScroll);
 
 /**
  * Updates the state of the scroller

@@ -23,7 +23,8 @@ enum enItemType {
     T_WAIT,
     T_MOVE_HORIZONTAL,
     T_MOVE_VERTICAL,
-    T_MAX
+    T_MAX,
+    T_NONE
 };
 typedef enum enItemType itemType;
 

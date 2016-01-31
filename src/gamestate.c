@@ -40,6 +40,15 @@ static char *dictStr[] = { "dummy" };
 static int dictType[] = { 0 };
 static int dictLen = sizeof(dictType) / sizeof(int);
 
+static int pBgAnim[] = {
+/* len|fps|loop|data */
+    2 , 8 ,  1 ,79,82,
+    2 , 8 ,  1 ,80,83,
+    2 , 8 ,  1 ,111,114,
+    2 , 8 ,  1 ,143,146,
+    2 , 8 ,  1 ,175,178
+};
+
 /**
  * Release everything alloc'ed on init
  */
@@ -82,6 +91,10 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmTilemap_loadfStatic(pState->pBackground, pGame->pCtx,
             "map/map_map.gfm", dictStr, dictType, dictLen);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmTilemap_addAnimationsStatic(pState->pBackground, pBgAnim);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmTilemap_recacheAnimations(pState->pBackground);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Load all objects */
