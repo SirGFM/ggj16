@@ -12,6 +12,7 @@
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
+#include <ggj16/gesture.h>
 #include <ggj16/state.h>
 
 /* == Types declaration ===================================================== */
@@ -187,6 +188,8 @@ struct stConfigCtx {
 struct stGlobalCtx {
     /** The quadtree for collision */
     gfmQuadtreeRoot *pQt;
+    /** Gesture recognizer */
+    gesture *pGesture;
     /* TODO Add any other globally accessible variable (e.g., a tilemap) */
 };
 

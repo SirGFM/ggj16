@@ -15,6 +15,7 @@
 #include <GFraMe/gfmTilemap.h>
 
 #include <ggj16/cauldron.h>
+#include <ggj16/gesture.h>
 #include <ggj16/gamestate.h>
 #include <ggj16/object.h>
 #include <ggj16/recipeScroll.h>
@@ -228,6 +229,10 @@ gfmRV gs_update() {
     ASSERT(pGame->curState == ST_GAME, GFMRV_INTERNAL_ERROR);
     ASSERT(pGame->pState != 0, GFMRV_INTERNAL_ERROR);
     pState = (gamestate*)pGame->pState;
+
+    /* Update the gesture recognizer */
+    rv = gesture_update(pGlobal->pGesture);
+    ASSERT(rv == GFMRV_OK, rv);
 
     /* Initialize the quadtree */
     rv = gfmQuadtree_initRoot(pGlobal->pQt, QT_X, QT_Y, QT_WIDTH, QT_HEIGHT,

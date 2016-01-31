@@ -7,6 +7,7 @@
           $(OBJDIR)/cauldron.o     \
           $(OBJDIR)/collision.o    \
           $(OBJDIR)/config.o       \
+          $(OBJDIR)/gesture.o      \
           $(OBJDIR)/gamestate.o    \
           $(OBJDIR)/global.o       \
           $(OBJDIR)/input.o        \
@@ -101,6 +102,8 @@
   else
     LFLAGS := -lGFraMe_dbg
   endif
+# Required in some OSs to link with tan and whatnot
+  LFLAGS := $(LFLAGS) -lm
 # Add libs and paths required by an especific OS
   ifeq ($(OS), Win)
     LFLAGS := -mwindows -lmingw32 $(LFLAGS) -lSDL2main

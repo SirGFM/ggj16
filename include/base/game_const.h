@@ -20,6 +20,10 @@
 #define V_WIDTH     160
 /** Virtual window's height */
 #define V_HEIGHT    120
+/** Virtual window's horizontal center */
+#define V_CENTER_X  (V_WIDTH / 2)
+/** Virtual window's vertical center */
+#define V_CENTER_Y  (V_HEIGHT / 2)
 /** Whether the user can resize the game window */
 #define CAN_RESIZE  1
 /** Initial background color in 0xAARRGGBB format */

@@ -60,7 +60,9 @@ gfmRV global_initUserVar() {
     rv = gfmQuadtree_getNew(&(pGlobal->pQt));
     ASSERT(rv == GFMRV_OK, rv);
 
-    /* TODO Initialize everything */
+    /* Initialize everything */
+    rv = gesture_getNew(&(pGlobal->pGesture));
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -71,8 +73,11 @@ __ret:
  * Release all variables in pGlobal
  */
 void global_freeUserVar() {
-    if (pGlobal->pQt) {
-        gfmQuadtree_free(&(pGlobal->pQt));
+    if (!pGlobal) {
+        return;
     }
+
+    gfmQuadtree_free(&(pGlobal->pQt));
+    gesture_free(&(pGlobal->pGesture));
 }
 
