@@ -16,6 +16,8 @@ typedef struct stRecipeScroll recipeScroll;
 
 #include <GFraMe/gfmError.h>
 
+#include <ggj16/type.h>
+
 /**
  * Releases all memory
  *
@@ -40,7 +42,7 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll);
  * @param  [ in]speed   Recipe' scrolling speed (in pixels-per-second)
  * @return              GFraMe return value
  */
-gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
+gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
         double speed);
 
 /**

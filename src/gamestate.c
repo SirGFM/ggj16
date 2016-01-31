@@ -16,6 +16,7 @@
 #include <ggj16/gamestate.h>
 #include <ggj16/object.h>
 #include <ggj16/recipeScroll.h>
+#include <ggj16/type.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -125,9 +126,18 @@ gfmRV gs_init() {
     rv = recipeScroll_getNew(&(pState->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
     /* TODO Load level from generator */
-    int pData[] = {0, 0, 0, 0};
-    rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int), -16);
-    ASSERT(rv == GFMRV_OK, rv);
+    do {
+        itemType pData[T_MAX];
+        int i;
+
+        i = 0;
+        while (i < T_MAX) {
+            pData[i] = i;
+            i++;
+        }
+        rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int), -48);
+        ASSERT(rv == GFMRV_OK, rv);
+    } while(0);
 
     pGame->pState = pState;
     rv = GFMRV_OK;

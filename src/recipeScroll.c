@@ -11,6 +11,8 @@
 #include <GFraMe/gfmTilemap.h>
 
 #include <ggj16/recipeScroll.h>
+#include <ggj16/type.h>
+
 
 #include <stdlib.h>
 #include <string.h>
@@ -93,7 +95,7 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
     rv = gfmTilemap_setPosition(pScroll->pMask, 15 * 8, 0);
     ASSERT(rv == GFMRV_OK, rv);
 
-    pScroll->recipeX = 16 * 8 - 4;
+    pScroll->recipeX = 16 * 8;
     pScroll->recipeY = 8 * 8;
     pScroll->recipeSpeed = 4;
 
@@ -116,7 +118,7 @@ __ret:
  * @param  [ in]speed   Recipe' scrolling speed (in pixels-per-second)
  * @return              GFraMe return value
  */
-gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
+gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
         double speed) {
     /* Recipe's tile data */
     int *pData;
@@ -126,7 +128,7 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
     int i;
 
     /* Update the visible recipe */
-    rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 2/*w*/,
+    rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 1/*w*/,
             length * 2/*h*/, 352/*defTile*/); 
     rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
@@ -134,16 +136,17 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, int *pItems, int length,
 
     i = 0;
     while (i < length) {
-        /** TODO Load the correct sprite and list */
-        pData[i * 4 + 0] = 352;
-        pData[i * 4 + 1] = -1;
-        pData[i * 4 + 2] = -1;
-        pData[i * 4 + 3] = -1;
+        /* All types were set sequentially on the tile set, with the first on
+         * tile 352. Since each one spawns two tiles (the normal and a
+         * highlighted version), retrieveing the tile is a simple matter of
+         * calculating the correct index */
+        pData[i * 2 + 0] = 352 + (pItems[i] - T_RAT_TAIL) * 2;
+        pData[i * 2 + 1] = -1;
         i++;
     }
 
     /* Reset the recipe's position */
-    pScroll->recipeX = 16 * 8 - 4;
+    pScroll->recipeX = 16 * 8;
     pScroll->recipeY = 8 * 8;
     pScroll->recipeSpeed = speed;
 
@@ -203,10 +206,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
     ASSERT(rv == GFMRV_OK, rv);
     i = 0;
     while (i < pScroll->numItems) {
-        pData[i * 4 + 0] &= 0xfffffffe;
-        if (pData[i * 4 + 1] != -1) {
-            pData[i * 4 + 1] &= 0xfffffffe;
-        }
+        pData[i * 2 + 0] &= 0xfffffffe;
         i++;
     }
     /* Highlight the current item */
@@ -218,11 +218,16 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
 
         tile = (int)(44 - pScroll->recipeY) / 16;
         pos  = (int)(44 - pScroll->recipeY) % 16;
-        if (pos >= 4 && pos < 14 && tile < pScroll->numItems) {
-            pData[tile *  4 + 0] |= 1;
-            pData[tile *  4 + 1] |= 1;
-
-            /* TODO Set the a item is expected */
+        if (pos == 0) {
+            /* First frame when the item can be "done" */
+            /* TODO Set expected item */
+            /* TODO Clear motion */
+        }
+        else if (pos >= 4 && pos < 14 && tile < pScroll->numItems) {
+            pData[tile *  2 + 0] |= 1;
+        }
+        else if (pos == 15) {
+            /* If item still hasn't been "done", the player failed */
         }
     }
 
