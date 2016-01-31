@@ -177,7 +177,7 @@ gfmRV gesture_update(gesture *pCtx) {
                 2 * PI + delta >= 0.0 &&
                 pCtx->dAng >= 0.0) {
             /* Just went over 2*PI (corner case) */
-            pCtx->dAng += 2 * PI - delta;
+            pCtx->dAng += 2 * PI + delta;
             pCtx->angErr = 0;
         }
         else if (delta <= 0.0 && pCtx->dAng <= 0.0) {
