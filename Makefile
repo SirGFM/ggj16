@@ -4,6 +4,7 @@
 #=======================================================================
   OBJS =                           \
           $(OBJDIR)/assets.o       \
+          $(OBJDIR)/cauldron.o     \
           $(OBJDIR)/collision.o    \
           $(OBJDIR)/config.o       \
           $(OBJDIR)/gamestate.o    \

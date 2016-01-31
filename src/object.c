@@ -21,6 +21,7 @@ struct stObject {
     /** The object's sprite */
     gfmSprite *pSelf;
 };
+static int pCauldronAnim[] = {9, 10, 11, 12};
 
 /**
  * Release all alloc'ed memory
@@ -136,6 +137,14 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pObj->pSelf, tile);
     ASSERT(rv == GFMRV_OK, rv);
+    if (type == T_CAULDRON) {
+        int index;
+
+        rv = gfmSprite_addAnimation(&index, pObj->pSelf, pCauldronAnim,
+                sizeof(pCauldronAnim) / sizeof(int) /* len  */, 16 /* fps */,
+                0 /* loop */);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
 
     rv = GFMRV_OK;
 __ret:

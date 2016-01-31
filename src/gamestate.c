@@ -14,6 +14,7 @@
 #include <GFraMe/gfmParser.h>
 #include <GFraMe/gfmTilemap.h>
 
+#include <ggj16/cauldron.h>
 #include <ggj16/gamestate.h>
 #include <ggj16/object.h>
 #include <ggj16/recipeScroll.h>
@@ -28,6 +29,8 @@ gfmGenArr_define(object);
     gfmTilemap_loadf(pTMap, pCtx, pFilename, sizeof(pFilename) - 1, pDictNames, pDictTypes, dictLen)
 
 struct stGamestate {
+    /** The cauldron */
+    cauldron *pCauldron;
     /** The background */
     gfmTilemap *pBackground;
     /** List of objects */
@@ -64,6 +67,7 @@ void gs_free() {
     /* Retrieve the current state from the global one */
     pState = (gamestate*)pGame->pState;
 
+    cauldron_free(&(pState->pCauldron));
     gfmGroup_free(&(pState->pFire));
     gfmGenArr_clean(pState->pObjects, object_free);
     gfmTilemap_free(&(pState->pBackground));
@@ -127,14 +131,34 @@ gfmRV gs_init() {
             ASSERT(0, GFMRV_INTERNAL_ERROR);
         }
         else if (type == gfmParserType_object) {
-            object *pObj;
+            /** In game type (as string) */
+            char *pName;
+            /** Type of the current item */
+            itemType type;
 
-            /* Parse and spawn the object */
-            gfmGenArr_getNextRef(object, pState->pObjects, 1/* inc */, pObj,
-                    object_getNew);
-            rv = object_init(pObj, pParser);
+            /* Retrieve the type */
+            rv = gfmParser_getIngameType(&pName, pParser);
             ASSERT(rv == GFMRV_OK, rv);
-            gfmGenArr_push(pState->pObjects);
+            rv = type_getHandle(&type, pName);
+            ASSERT(rv == GFMRV_OK, rv);
+
+            if (type == T_CAULDRON) {
+                rv = cauldron_getNew(&(pState->pCauldron));
+                ASSERT(rv == GFMRV_OK, rv);
+                rv = cauldron_init(pState->pCauldron, pParser);
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+            else {
+                /** Alloc'ed object */
+                object *pObj;
+
+                /* Parse and spawn the object */
+                gfmGenArr_getNextRef(object, pState->pObjects, 1/* inc */, pObj,
+                        object_getNew);
+                rv = object_init(pObj, pParser);
+                ASSERT(rv == GFMRV_OK, rv);
+                gfmGenArr_push(pState->pObjects);
+            }
         }
         else {
             /* Something weird happened */
@@ -219,7 +243,9 @@ gfmRV gs_update() {
     /* Update all objects */
     gfmGenArr_callAll(pState->pObjects, object_update);
 
-    /* Update the particles */
+    /* Update the cauldron */
+    rv = cauldron_update(pState->pCauldron);
+    ASSERT(rv == GFMRV_OK, rv);
     i = 0;
     while (i < 5) {
         gfmSprite *pSpr;
@@ -277,7 +303,10 @@ gfmRV gs_draw() {
 
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
-    /* Draw the particles */
+
+    /* Draw the cauldron */
+    rv = cauldron_draw(pState->pCauldron);
+    ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
