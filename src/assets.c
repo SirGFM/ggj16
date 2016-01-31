@@ -32,9 +32,12 @@ gfmRV assets_load() {
     rv = gfm_loadTextureStatic(&(pGfx->texHandle), pGame->pCtx, "gfx/atlas.bmp",
             COLORKEY);
     ASSERT(rv == GFMRV_OK, rv);
+    GEN_SPRITESET(2, 2, pGfx->texHandle);
+    GEN_SPRITESET(4, 4, pGfx->texHandle);
     GEN_SPRITESET(8, 8, pGfx->texHandle);
     GEN_SPRITESET(16, 16, pGfx->texHandle);
     GEN_SPRITESET(32, 32, pGfx->texHandle);
+    GEN_SPRITESET(64, 64, pGfx->texHandle);
 
     rv = GFMRV_OK;
 __ret:

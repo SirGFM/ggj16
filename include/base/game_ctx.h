@@ -116,12 +116,18 @@ struct stGameCtx {
 
 /** Store all handles to texture and spritesets' pointers */
 struct stGfxCtx {
+    /** 2x2 spriteset of the main texture */
+    gfmSpriteset *pSset2x2;
+    /** 4x4 spriteset of the main texture */
+    gfmSpriteset *pSset4x4;
     /** 8x8 spriteset of the main texture */
     gfmSpriteset *pSset8x8;
     /** 16x16 spriteset of the main texture */
     gfmSpriteset *pSset16x16;
     /** 32x32 spriteset of the main texture */
     gfmSpriteset *pSset32x32;
+    /** 64x64 spriteset of the main texture */
+    gfmSpriteset *pSset64x64;
     /** Handle of the main texture atlas */
     int texHandle;
 };

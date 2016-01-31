@@ -10,6 +10,7 @@
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmGenericArray.h>
+#include <GFraMe/gfmGroup.h>
 #include <GFraMe/gfmParser.h>
 #include <GFraMe/gfmTilemap.h>
 
@@ -31,8 +32,12 @@ struct stGamestate {
     gfmTilemap *pBackground;
     /** List of objects */
     gfmGenArr_var(object, pObjects);
+    /** Fire particles */
+    gfmGroup *pFire;
     /** Current recipe */
     recipeScroll *pRecipe;
+    /** Iterator for spawn fire particles */
+    int curFire;
 };
 typedef struct stGamestate gamestate;
 
@@ -59,6 +64,8 @@ void gs_free() {
     /* Retrieve the current state from the global one */
     pState = (gamestate*)pGame->pState;
 
+    gfmGroup_free(&(pState->pFire));
+    gfmGenArr_clean(pState->pObjects, object_free);
     gfmTilemap_free(&(pState->pBackground));
     recipeScroll_free(&(pState->pRecipe));
 }
@@ -135,6 +142,23 @@ gfmRV gs_init() {
         }
     } /* while(1) parser */
 
+    /* Initialize the fire particles */
+    rv = gfmGroup_getNew(&(pState->pFire));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefSpriteset(pState->pFire, pGfx->pSset2x2);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefDimensions(pState->pFire, 2 /* width */, 2 /* height */,
+            0 /* offX */, 0 /* offY */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefVelocity(pState->pFire, 0 /* vx */, -25 /* vy */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDefAcceleration(pState->pFire, 0 /* ax */, 6 /* ay */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_setDeathOnLeave(pState->pFire, 1 /* doDie */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_preCache(pState->pFire, 1024, 0/* infinite */);
+    ASSERT(rv == GFMRV_OK, rv);
+
     /* Initialize the recipe */
     rv = recipeScroll_getNew(&(pState->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
@@ -173,6 +197,8 @@ gfmRV gs_update() {
     gfmRV rv;
     /** The new state */
     gamestate *pState;
+    /** Count how many particles were spawned */
+    int i;
 
     /* Check that the state is correct and retrieve it*/
     ASSERT(pGame->curState == ST_GAME, GFMRV_INTERNAL_ERROR);
@@ -192,6 +218,36 @@ gfmRV gs_update() {
     ASSERT(rv == GFMRV_OK, rv);
     /* Update all objects */
     gfmGenArr_callAll(pState->pObjects, object_update);
+
+    /* Update the particles */
+    i = 0;
+    while (i < 5) {
+        gfmSprite *pSpr;
+
+        /* Spawn some new particles */
+        rv = gfmGroup_setDeathOnTime(pState->pFire,
+                800 + (pState->curFire % 16 + 1) * 25 /* time to live */);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmGroup_recycle(&pSpr, pState->pFire);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmGroup_setPosition(pState->pFire, 79 /* x */, 104 /* y */);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmGroup_setFrame(pState->pFire, 
+                12 + ((19 * pState->curFire) % 4) /* tile */);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmGroup_setVelocity(pState->pFire,
+                -10 + (1 + pState->curFire % 23) /* vx */,
+                -2 - (pState->curFire % 7) /* vy */);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        /* Update the "RNG" */
+        pState->curFire += 17;
+        pState->curFire %= 32;
+
+        i++;
+    }
+    rv = gfmGroup_update(pState->pFire, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -221,6 +277,9 @@ gfmRV gs_draw() {
 
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
+    /* Draw the particles */
+    rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
