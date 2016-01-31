@@ -12,8 +12,10 @@
 #include <GFraMe/gfmSpriteset.h>
 #include <GFraMe/core/gfmAudio_bkend.h>
 
+#include <ggj16/cauldron.h>
 #include <ggj16/gesture.h>
 #include <ggj16/object.h>
+#include <ggj16/recipeScroll.h>
 #include <ggj16/state.h>
 
 /* == Types declaration ===================================================== */
@@ -189,12 +191,16 @@ struct stConfigCtx {
 
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
+    /** The cauldron */
+    cauldron *pCauldron;
     /** The quadtree for collision */
     gfmQuadtreeRoot *pQt;
     /** Gesture recognizer */
     gesture *pGesture;
     /** Current object being dragger */
     object *pDragging;
+    /** Current recipe */
+    recipeScroll *pRecipe;
     /** Whether an object is being dragged */
     int isDragging;
     /* TODO Add any other globally accessible variable (e.g., a tilemap) */

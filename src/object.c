@@ -15,6 +15,9 @@
 #include <ggj16/object.h>
 #include <ggj16/type.h>
 
+#if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+#  include <signal.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 
@@ -29,8 +32,9 @@ struct stObject {
     int offX;
     /** Offset from the mouse */
     int offY;
+    /** Cached type of the item (for ease of access) */
+    itemType type;
 };
-static int pCauldronAnim[] = {9, 10, 11, 12};
 
 /**
  * Release all alloc'ed memory
@@ -134,17 +138,12 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pObj->pSelf, tile);
     ASSERT(rv == GFMRV_OK, rv);
-    if (type == T_CAULDRON) {
-        int index;
 
-        rv = gfmSprite_addAnimation(&index, pObj->pSelf, pCauldronAnim,
-                sizeof(pCauldronAnim) / sizeof(int) /* len  */, 16 /* fps */,
-                0 /* loop */);
-        ASSERT(rv == GFMRV_OK, rv);
-    }
-
+    /* Set the position the object will be returned */
     pObj->originX = x;
     pObj->originY = y;
+    /* Cache its type */
+    pObj->type = type;
 
     rv = GFMRV_OK;
 __ret:
@@ -214,7 +213,13 @@ gfmRV object_update(object *pObj) {
                 pGlobal->isDragging = 0;
                 pGlobal->pDragging = 0;
 
-                /* TODO Check if it's over the cauldron */
+                /*  Check if it's over the cauldron */
+                rv = cauldron_isOverlapping(pGlobal->pCauldron, pObj->pSelf);
+                ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
+                if (rv == GFMRV_TRUE) {
+                    /* Check if it was the expected type */
+                    recipeScroll_isExpectedItem(pGlobal->pRecipe, pObj->type);
+                }
 
                 rv = gfmSprite_setPosition(pObj->pSelf, pObj->originX,
                         pObj->originY);

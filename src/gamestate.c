@@ -18,7 +18,6 @@
 #include <ggj16/gesture.h>
 #include <ggj16/gamestate.h>
 #include <ggj16/object.h>
-#include <ggj16/recipeScroll.h>
 #include <ggj16/type.h>
 
 #include <stdlib.h>
@@ -30,16 +29,12 @@ gfmGenArr_define(object);
     gfmTilemap_loadf(pTMap, pCtx, pFilename, sizeof(pFilename) - 1, pDictNames, pDictTypes, dictLen)
 
 struct stGamestate {
-    /** The cauldron */
-    cauldron *pCauldron;
     /** The background */
     gfmTilemap *pBackground;
     /** List of objects */
     gfmGenArr_var(object, pObjects);
     /** Fire particles */
     gfmGroup *pFire;
-    /** Current recipe */
-    recipeScroll *pRecipe;
     /** Iterator for spawn fire particles */
     int curFire;
 };
@@ -68,11 +63,11 @@ void gs_free() {
     /* Retrieve the current state from the global one */
     pState = (gamestate*)pGame->pState;
 
-    cauldron_free(&(pState->pCauldron));
+    cauldron_free(&(pGlobal->pCauldron));
     gfmGroup_free(&(pState->pFire));
     gfmGenArr_clean(pState->pObjects, object_free);
     gfmTilemap_free(&(pState->pBackground));
-    recipeScroll_free(&(pState->pRecipe));
+    recipeScroll_free(&(pGlobal->pRecipe));
 }
 
 /**
@@ -144,9 +139,9 @@ gfmRV gs_init() {
             ASSERT(rv == GFMRV_OK, rv);
 
             if (type == T_CAULDRON) {
-                rv = cauldron_getNew(&(pState->pCauldron));
+                rv = cauldron_getNew(&(pGlobal->pCauldron));
                 ASSERT(rv == GFMRV_OK, rv);
-                rv = cauldron_init(pState->pCauldron, pParser);
+                rv = cauldron_init(pGlobal->pCauldron, pParser);
                 ASSERT(rv == GFMRV_OK, rv);
             }
             else {
@@ -185,7 +180,7 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Initialize the recipe */
-    rv = recipeScroll_getNew(&(pState->pRecipe));
+    rv = recipeScroll_getNew(&(pGlobal->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
     /* TODO Load level from generator */
     do {
@@ -197,7 +192,7 @@ gfmRV gs_init() {
             pData[i] = i;
             i++;
         }
-        rv = recipeScroll_load(pState->pRecipe, pData, sizeof(pData) / sizeof(int), -48);
+        rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -48);
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);
 
@@ -240,7 +235,7 @@ gfmRV gs_update() {
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Update the scroller */
-    rv = recipeScroll_update(pState->pRecipe);
+    rv = recipeScroll_update(pGlobal->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
     /* Update the tilemap (e.g., if it's animated) */
     rv = gfmTilemap_update(pState->pBackground, pGame->pCtx);
@@ -249,7 +244,7 @@ gfmRV gs_update() {
     gfmGenArr_callAll(pState->pObjects, object_update);
 
     /* Update the cauldron */
-    rv = cauldron_update(pState->pCauldron);
+    rv = cauldron_update(pGlobal->pCauldron);
     ASSERT(rv == GFMRV_OK, rv);
     i = 0;
     while (i < 5) {
@@ -280,6 +275,13 @@ gfmRV gs_update() {
     rv = gfmGroup_update(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
+    /* Everything was updated, check if the user failed */
+    rv = recipeScroll_didFail(pGlobal->pRecipe);
+    ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
+    if (rv == GFMRV_TRUE) {
+        cauldron_doExplode(pGlobal->pCauldron);
+    }
+
     rv = GFMRV_OK;
 __ret:
     return GFMRV_OK;
@@ -303,17 +305,17 @@ gfmRV gs_draw() {
     rv = gfmTilemap_draw(pState->pBackground, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
     /* Draw the scroll */
-    rv = recipeScroll_draw(pState->pRecipe);
+    rv = recipeScroll_draw(pGlobal->pRecipe);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Draw the cauldron */
+    rv = cauldron_draw(pGlobal->pCauldron);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
-
-    /* Draw the cauldron */
-    rv = cauldron_draw(pState->pCauldron);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
 
     /* Draw info about the gesture */
     gesture_draw(pGlobal->pGesture);

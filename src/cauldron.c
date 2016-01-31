@@ -157,8 +157,8 @@ gfmRV cauldron_doExplode(cauldron *pCal) {
 /**
  * Update the cauldron
  *
- * @param  [ in]pCal    The parsed cauldron
- * @return            GFraMe return value
+ * @param  [ in]pCal The cauldron
+ * @return           GFraMe return value
  */
 gfmRV cauldron_update(cauldron *pCal) {
     return gfmSprite_update(pCal->pSelf, pGame->pCtx);
@@ -167,10 +167,21 @@ gfmRV cauldron_update(cauldron *pCal) {
 /**
  * Draw the cauldron
  *
- * @param  [ in]pCal    The parsed cauldron
- * @return            GFraMe return value
+ * @param  [ in]pCal The cauldron
+ * @return           GFraMe return value
  */
 gfmRV cauldron_draw(cauldron *pCal) {
     return gfmSprite_draw(pCal->pSelf, pGame->pCtx);
+}
+
+/**
+ * Check if a sprite is overlapping the cauldron
+ *
+ * @param  [ in]pCal The cauldron
+ * @param  [ in]pSpr The other sprite
+ * @return           GFraMe return value
+ */
+gfmRV cauldron_isOverlapping(cauldron *pCal, gfmSprite *pSpr) {
+    return gfmSprite_isOverlaping(pCal->pSelf, pSpr);
 }
 

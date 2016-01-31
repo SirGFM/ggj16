@@ -37,6 +37,8 @@ struct stRecipeScroll {
     int recipeX;
     /** Number of items on the recipe */
     int numItems;
+    /** If the item was sucessfully added */
+    int done;
     /* Flag when errors happen */
     gfmRV error;
     /* Current expected type */
@@ -171,11 +173,13 @@ __ret:
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
 gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item) {
-    if (item == pScroll->expected) {
+    if (pScroll->done == 0 && item == pScroll->expected) {
+        pScroll->done = 1;
         return GFMRV_TRUE;
     }
     else {
-        /* TODO Set error FLAG */
+        /* Set error FLAG */
+        pScroll->error = GFMRV_TRUE;
         return GFMRV_FALSE;
     }
 }
@@ -236,6 +240,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
         if (tile < pScroll->numItems) {
             if (pos == 0) {
                 /* First frame when the item can be "done" */
+                pScroll->done = 0;
 
                 /* Set expected item */
                 pScroll->expected  = (pData[tile * 2 + 0] - 352) / 2 +

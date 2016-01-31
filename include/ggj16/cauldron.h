@@ -74,5 +74,14 @@ gfmRV cauldron_update(cauldron *pObj);
  */
 gfmRV cauldron_draw(cauldron *pObj);
 
+/**
+ * Check if a sprite is overlapping the cauldron
+ *
+ * @param  [ in]pCal The cauldron
+ * @param  [ in]pSpr The other sprite
+ * @return           GFraMe return value
+ */
+gfmRV cauldron_isOverlapping(cauldron *pCal, gfmSprite *pSpr);
+
 #endif /* __CAULDRON_H__ */
 
