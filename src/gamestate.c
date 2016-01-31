@@ -192,7 +192,7 @@ gfmRV gs_init() {
             pData[i] = i;
             i++;
         }
-        rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -48);
+        rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);
 

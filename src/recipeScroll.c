@@ -227,7 +227,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
         pData[i * 2 + 0] &= 0xfffffffe;
         i++;
     }
-    if (pScroll->recipeY < 44) {
+    if (pScroll->recipeY < 28) {
         /** Current active tile */
         int tile;
         /** Position within the valid area */
@@ -253,16 +253,38 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
                 pData[tile *  2 + 0] |= 1;
             }
             else if (pos == 15) {
-                itemType pActions[4];
+                if (!pScroll->done) {
+                    /** All possibles actions states */
+                    itemType pActions[4];
+                    /** Iterate through actions */
+                    int i;
 
-                /* If the expected was an action, check it now! */
-                rv = gesture_getCurrentGesture(pActions, pGlobal->pGesture);
-                ASSERT(rv != GFMRV_OK, rv);
+                    /* If an action was expected, check it now! */
+                    rv = gesture_getCurrentGesture(pActions, pGlobal->pGesture);
+                    ASSERT(rv == GFMRV_OK, rv);
 
-                /* TODO If item still hasn't been "done", the player failed */
+                    i = 0;
+                    while (i < 4) {
+                        if (pActions[i] == pScroll->expected) {
+                            pScroll->done = 1;
+                            break;
+                        }
+                        i++;
+                    }
+                    if (i == 4) {
+                        /* If no action was found, either the expected was
+                         * T_WAIT or an error happened */
+                        if (pScroll->expected == T_WAIT) {
+                            pScroll->done = 1;
+                        }
+                        else {
+                            pScroll->error = GFMRV_TRUE;
+                        }
+                    }
 
-                /* NOTE: If item is T_WAIT, the input must be NONE! */
-                pScroll->expected  = T_NONE;
+                    /* Clean the state */
+                    pScroll->expected = T_NONE;
+                }
             }
         }
         else {
