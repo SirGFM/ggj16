@@ -201,7 +201,6 @@ int main(int argc, char *argv[]) {
     rv = gfm_setStateFrameRate(pGame->pCtx, pConfig->fps, pConfig->fps);
     ASSERT(rv == GFMRV_OK, rv);
 
-    /* TODO Switch to the proper first state */
     pGame->nextState = ST_GAME;
 
     /* Play the song */

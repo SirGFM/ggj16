@@ -163,7 +163,6 @@ struct stButtonCtx {
     /** Add button to switch rendering of the quadtree */
     button qt;
 #endif
-    /* TODO Add buttons */
 };
 
 /** Store all data modifiably on the option menu, as well as anything that may
@@ -186,7 +185,6 @@ struct stConfigCtx {
     int fps;
     /** Audio quality (frequency, bits per samples and number of channels) */
     gfmAudioQuality audioQuality;
-    /* TODO Add button mapping */
 };
 
 /** Store game-related variables that should be globally accessible */
@@ -203,7 +201,6 @@ struct stGlobalCtx {
     recipeScroll *pRecipe;
     /** Whether an object is being dragged */
     int isDragging;
-    /* TODO Add any other globally accessible variable (e.g., a tilemap) */
 };
 
 #endif /* __GAME_CTX_H__ */

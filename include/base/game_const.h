@@ -6,8 +6,6 @@
 #ifndef __GAME_CONST_H__
 #define __GAME_CONST_H__
 
-/* TODO Set attributes for the game */
-
 /* == Game's basic configurations =========================================== */
 
 /** Game's "organization" */

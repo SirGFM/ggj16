@@ -11,8 +11,6 @@
 #include <base/game_ctx.h>
 #include <base/config.h>
 
-/* TODO Add button mapping */
-
 /**
  * Save the current configuration to the file
  */

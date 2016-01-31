@@ -50,7 +50,6 @@ gfmRV input_updateButtons() {
             ASSERT(rv == GFMRV_OK, rv);
             pConfig->flags |= CFG_FULLSCREEN;
         }
-        /* TODO Save the new state of the game's window */
     }
 #if defined(DEBUG)
     /* Switch whether rendering the quadtree is enabled */
@@ -58,8 +57,6 @@ gfmRV input_updateButtons() {
         pGame->flags ^= DBG_RENDERQT;
     }
 #endif
-
-    /* TODO Add actions that should be triggered as soon as key are pressed */
 
     rv = GFMRV_OK;
 __ret:
@@ -85,7 +82,6 @@ gfmRV input_init() {
 #if defined(DEBUG)
     ADD_KEY(qt);
 #endif
-    /* TODO Add other keys */
 
 #undef ADD_KEY
 
@@ -102,7 +98,6 @@ gfmRV input_init() {
 #if defined(DEBUG)
     BIND_KEY(qt, gfmKey_f11);
 #endif
-    /* TODO Bind other keys */
 
 #undef BIND_KEY
 
