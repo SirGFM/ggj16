@@ -201,6 +201,11 @@ int main(int argc, char *argv[]) {
     rv = gfm_setStateFrameRate(pGame->pCtx, pConfig->fps, pConfig->fps);
     ASSERT(rv == GFMRV_OK, rv);
 
+#if !defined(DEBUG)
+    rv = gfm_hideFPSCounter(pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+#endif
+
     pGame->nextState = ST_GAME;
 
     /* Play the song */
