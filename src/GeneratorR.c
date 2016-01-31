@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include "recipe.h"
+#include "gen/recipe.h"
 
 #define   ARRAY_SIZE   120
 #define   ARRAY_SIZE_NAME 255
