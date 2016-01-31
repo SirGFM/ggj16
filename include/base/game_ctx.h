@@ -135,7 +135,7 @@ struct stGfxCtx {
 
 /** Store all handles to songs and sound effects */
 struct stAudioCtx {
-    /* TODO Add any song/sfx here */
+    int song;
 };
 
 /** Simple button definition, so it's easier to update and access each button */

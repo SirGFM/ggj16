@@ -204,6 +204,10 @@ int main(int argc, char *argv[]) {
     /* TODO Switch to the proper first state */
     pGame->nextState = ST_GAME;
 
+    /* Play the song */
+    rv = gfm_playAudio(0, pGame->pCtx, pAudio->song, 1.0);
+    ASSERT(rv == GFMRV_OK, rv);
+
     /* Initialize the main loop */
     rv = main_loop();
     ASSERT(rv == GFMRV_OK, rv);
