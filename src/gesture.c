@@ -17,7 +17,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define PI 3.1415926
+#define PI           3.1415926
+#define GESTURE_MOVE 15
 
 #if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
 #  include <signal.h>
@@ -198,10 +199,10 @@ gfmRV gesture_update(gesture *pCtx) {
 
             /* Update movement */
             pCtx->dX += dX;
-            if (pCtx->dX > 40) {
+            if (pCtx->dX > GESTURE_MOVE) {
                 pCtx->move |= MOVE_RIGHT;
             }
-            else if (pCtx->dX < -40) {
+            else if (pCtx->dX < -GESTURE_MOVE) {
                 pCtx->move |= MOVE_LEFT;
             }
         }
@@ -219,10 +220,10 @@ gfmRV gesture_update(gesture *pCtx) {
 
             /* Update movemente */
             pCtx->dY += dY;
-            if (pCtx->dY > 40) {
+            if (pCtx->dY > GESTURE_MOVE) {
                 pCtx->move |= MOVE_DOWN;
             }
-            else if (pCtx->dY < -40) {
+            else if (pCtx->dY < -GESTURE_MOVE) {
                 pCtx->move |= MOVE_UP;
             }
         }
@@ -337,7 +338,7 @@ gfmRV gesture_getCurrentGesture(itemType *pItem, gesture *pCtx) {
                 }
             } break;
             case 2: {
-                if ((pCtx->move & MOVE_LEFT) && (pCtx->move & MOVE_RIGHT)) {
+                if ((pCtx->move & MOVE_UP) && (pCtx->move & MOVE_DOWN)) {
                     pItem[i] = T_MOVE_HORIZONTAL;
                 }
             } break;

@@ -211,6 +211,10 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
     /* Sanitize arguments */
     ASSERT(pScroll, GFMRV_ARGUMENTS_BAD);
 
+    if (pScroll->recipeSpeed > -64) {
+        pScroll->recipeSpeed -= 1 * ((double)pGame->elapsed) / 1000.0;
+    }
+
     /* Integrate the recipe's position */
     pScroll->recipeY += pScroll->recipeSpeed *
             ((double)pGame->elapsed / 1000.0);
@@ -227,17 +231,19 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
         pData[i * 2 + 0] &= 0xfffffffe;
         i++;
     }
-    if (pScroll->recipeY < 28) {
+    if ((int)pScroll->recipeY < 52) {
         /** Current active tile */
         int tile;
         /** Position within the valid area */
         int pos;
 
-        tile = (int)(44 - pScroll->recipeY) / 16;
-        pos  = (int)(44 - pScroll->recipeY) % 16;
+#define MAX_H_BLA 16
+        tile = (int)(52 - pScroll->recipeY) / MAX_H_BLA;
+        pos  = (int)(52 - pScroll->recipeY) % MAX_H_BLA;
 
         /* Check if it's still a valid item */
-        if (tile < pScroll->numItems) {
+        if ((pos == 0 || (pScroll->expected >= T_RAT_TAIL &&
+                pScroll->expected < T_MAX)) && tile < pScroll->numItems) {
             if (pos == 0) {
                 /* First frame when the item can be "done" */
                 pScroll->done = 0;
@@ -248,11 +254,11 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
                 /* Clear motion */
                 gesture_reset(pGlobal->pGesture);
             }
-            else if (pos >= 4 && pos < 14) {
+            else if (pos >= 1 && pos < MAX_H_BLA - 1) {
                 /* Highlight the current item */
                 pData[tile *  2 + 0] |= 1;
             }
-            else if (pos == 15) {
+            else if (pos == MAX_H_BLA - 1) {
                 if (!pScroll->done) {
                     /** All possibles actions states */
                     itemType pActions[4];

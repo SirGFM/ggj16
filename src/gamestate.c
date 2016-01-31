@@ -190,6 +190,7 @@ gfmRV gs_init() {
         i = 0;
         while (i < T_MAX) {
             pData[i] = i;
+            pData[i] = T_MOVE_VERTICAL;
             i++;
         }
         rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);

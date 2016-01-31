@@ -20,9 +20,9 @@ enum enItemType {
     T_MUSHROOM,
     T_ROTATE_CW,
     T_ROTATE_CCW,
-    T_WAIT,
-    T_MOVE_HORIZONTAL,
+    T_WAIT, /* Doesn't work, do not use */
     T_MOVE_VERTICAL,
+    T_MOVE_HORIZONTAL,
     T_MAX,
     T_NONE
 };
