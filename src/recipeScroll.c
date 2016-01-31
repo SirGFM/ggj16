@@ -10,6 +10,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmTilemap.h>
 
+#include <ggj16/gesture.h>
 #include <ggj16/recipeScroll.h>
 #include <ggj16/type.h>
 
@@ -239,14 +240,22 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
                 /* Set expected item */
                 pScroll->expected  = (pData[tile * 2 + 0] - 352) / 2 +
                         T_RAT_TAIL;
-                /* TODO Clear motion */
+                /* Clear motion */
+                gesture_reset(pGlobal->pGesture);
             }
             else if (pos >= 4 && pos < 14) {
                 /* Highlight the current item */
                 pData[tile *  2 + 0] |= 1;
             }
             else if (pos == 15) {
+                itemType pActions[4];
+
+                /* If the expected was an action, check it now! */
+                rv = gesture_getCurrentGesture(pActions, pGlobal->pGesture);
+                ASSERT(rv != GFMRV_OK, rv);
+
                 /* TODO If item still hasn't been "done", the player failed */
+
                 /* NOTE: If item is T_WAIT, the input must be NONE! */
                 pScroll->expected  = T_NONE;
             }

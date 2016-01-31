@@ -23,6 +23,14 @@
 #  include <signal.h>
 #endif
 
+enum enMoveState {
+    MOVE_LEFT  = 0x0001,
+    MOVE_RIGHT = 0x0002,
+    MOVE_UP    = 0x0004,
+    MOVE_DOWN  = 0x0008
+};
+typedef enum enMoveState moveState;
+
 struct stGesture {
     /** Last angle */
     double lastAng;
@@ -39,8 +47,13 @@ struct stGesture {
     /** Flag that signals when the struct has been just reset, so it's properly
      * initialized */
     int justReset;
-    /** Allow a few frame (urg) of error when spinning */
+    /** Allow a few frames (urg) of error when spinning */
     int angErr;
+    /** Allow a few frames (urg) of error when moving */
+    int xErr;
+    int yErr;
+    /** Check the movement state */
+    moveState move;
 };
 
 /**
@@ -165,34 +178,82 @@ gfmRV gesture_update(gesture *pCtx) {
 
     /** Only update the state if we know the previous state */
     if (!pCtx->justReset) {
-        double delta;
+        double deltaAng;
+        int dX, dY;
 
-        delta = curAng - pCtx->lastAng;
-        if ((delta >= 0.0 && pCtx->dAng >= 0.0)) {
-            pCtx->dAng += delta;
+        /* Update the movement state */
+        dX = mouseX - pCtx->lastX;
+        dY = mouseY - pCtx->lastY;
+        if (dX != 0) {
+            /* Few frames of leeway */
+            if ((pCtx->dX >= 0 && dX < 0) || (pCtx->dX <= 0 && dX > 0)) {
+                pCtx->xErr++;
+                if (pCtx->xErr > 3) {
+                    pCtx->dX = 0;
+                }
+            }
+            else {
+                pCtx->xErr = 0;
+            }
+
+            /* Update movement */
+            pCtx->dX += dX;
+            if (pCtx->dX > 40) {
+                pCtx->move |= MOVE_RIGHT;
+            }
+            else if (pCtx->dX < -40) {
+                pCtx->move |= MOVE_LEFT;
+            }
+        }
+        if (dY != 0) {
+            /* Few frames of leeway */
+            if ((pCtx->dY >= 0 && dY < 0) || (pCtx->dY <= 0 && dY > 0)) {
+                pCtx->yErr++;
+                if (pCtx->yErr > 3) {
+                    pCtx->dY = 0;
+                }
+            }
+            else {
+                pCtx->yErr = 0;
+            }
+
+            /* Update movemente */
+            pCtx->dY += dY;
+            if (pCtx->dY > 40) {
+                pCtx->move |= MOVE_DOWN;
+            }
+            else if (pCtx->dY < -40) {
+                pCtx->move |= MOVE_UP;
+            }
+        }
+
+        /* Update the angular state */
+        deltaAng = curAng - pCtx->lastAng;
+        if ((deltaAng >= 0.0 && pCtx->dAng >= 0.0)) {
+            pCtx->dAng += deltaAng;
             pCtx->angErr = 0;
         }
         else if (curAng < PI / 2 &&
                 pCtx->lastAng > 3 * PI / 2 &&
-                2 * PI + delta >= 0.0 &&
+                2 * PI + deltaAng >= 0.0 &&
                 pCtx->dAng >= 0.0) {
             /* Just went over 2*PI (corner case) */
-            pCtx->dAng += 2 * PI + delta;
+            pCtx->dAng += 2 * PI + deltaAng;
             pCtx->angErr = 0;
         }
-        else if (delta <= 0.0 && pCtx->dAng <= 0.0) {
-            pCtx->dAng += delta;
+        else if (deltaAng <= 0.0 && pCtx->dAng <= 0.0) {
+            pCtx->dAng += deltaAng;
             pCtx->angErr = 0;
         }
         else if (curAng > 3 * PI / 2 &&
                 pCtx->lastAng < PI / 2 &&
-                delta - 2 * PI <= 0.0 &&
+                deltaAng - 2 * PI <= 0.0 &&
                 pCtx->dAng <= 0.0) {
             /* Just went over 0 (corner case) */
-            pCtx->dAng += delta - 2 * PI;
+            pCtx->dAng += deltaAng - 2 * PI;
             pCtx->angErr = 0;
         }
-        else if (delta != 0.0) {
+        else if (deltaAng != 0.0) {
             /* Mouse on the opposite direction, reset */
             pCtx->angErr++;
             if (pCtx->angErr > 3) {
@@ -219,29 +280,75 @@ __ret:
  * @param  [ in]pCtx The recognizer
  */
 void gesture_draw(gesture *pGesture) {
-    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 0/*x*/, 120-8/*y*/,
+#if defined(DEBUG)
+    /* Debug dX */
+    gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, 0/*x*/, 120-24/*y*/, 'Y' - '!',
+            0/*flip*/);
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 8/*x*/, 120-24/*y*/,
+            (int)pGesture->dY, 3/*numDigits*/, 0/*first ascii tile*/);
+
+    /* Debug dY */
+    gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, 0/*x*/, 120-16/*y*/, 'X' - '!',
+            0/*flip*/);
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 8/*x*/, 120-16/*y*/,
+            (int)pGesture->dX, 3/*numDigits*/, 0/*first ascii tile*/);
+
+    /* Debug dAng */
+    gfm_drawTile(pGame->pCtx, pGfx->pSset8x8, 0/*x*/, 120-8/*y*/, 'A' - '!',
+            0/*flip*/);
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 8/*x*/, 120-8/*y*/,
             (int)pGesture->dAng, 3/*numDigits*/, 0/*first ascii tile*/);
-    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 32/*x*/, 120-8/*y*/,
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 40/*x*/, 120-8/*y*/,
             (int)(pGesture->dAng * 100) - ((int)pGesture->dAng) * 100,
             3/*numDigits*/, 0/*first ascii tile*/);
+#endif
 }
 
 /**
  * Retrieve the current gesture (if any)
  *
- * @param  [out]pItem The current gesture
+ * @param  [out]pItem The current gestures (must have 4 positions)
  * @param  [ in]pCtx  The recognizer
  * @return            GFraMe return value
  */
 gfmRV gesture_getCurrentGesture(itemType *pItem, gesture *pCtx) {
     /** GFraMe return value */
     gfmRV rv;
+    /** Iterate through items */
+    int i;
 
     /* Sanitize arguments */
     ASSERT(pItem, GFMRV_ARGUMENTS_BAD);
     ASSERT(pCtx, GFMRV_ARGUMENTS_BAD);
 
-    /* TODO */
+    /* Set all available actions */
+    i = 0;
+    while (i < 4) {
+        pItem[i] = T_NONE;
+        switch (i) {
+            case 0: {
+                if (pCtx->dAng > 2 * PI) {
+                    pItem[i] = T_ROTATE_CCW;
+                }
+            } break;
+            case 1: {
+                if (pCtx->dAng < -2 * PI) {
+                    pItem[i] = T_ROTATE_CW;
+                }
+            } break;
+            case 2: {
+                if ((pCtx->move & MOVE_LEFT) && (pCtx->move & MOVE_RIGHT)) {
+                    pItem[i] = T_MOVE_HORIZONTAL;
+                }
+            } break;
+            case 3: {
+                if ((pCtx->move & MOVE_LEFT) && (pCtx->move & MOVE_RIGHT)) {
+                    pItem[i] = T_MOVE_VERTICAL;
+                }
+            } break;
+        }
+        i++;
+    }
 
     rv = GFMRV_OK;
 __ret:

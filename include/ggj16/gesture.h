@@ -57,7 +57,7 @@ void gesture_draw(gesture *pGesture);
 /**
  * Retrieve the current gesture (if any)
  *
- * @param  [out]pItem The current gesture
+ * @param  [out]pItem The current gestures (must have 4 positions)
  * @param  [ in]pCtx  The recognizer
  * @return            GFraMe return value
  */
