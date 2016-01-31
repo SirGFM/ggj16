@@ -182,7 +182,6 @@ gfmRV gs_init() {
     /* Initialize the recipe */
     rv = recipeScroll_getNew(&(pGlobal->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
-    /* TODO Load level from generator */
     do {
 		int MAX_ITEMS = 32;
 		
@@ -223,7 +222,6 @@ gfmRV gs_init() {
 		pData[30] = T_MOVE_HORIZONTAL;
 		pData[31] = T_BAT_WING;
 			
-		
         rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);
