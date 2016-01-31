@@ -1,0 +1,7 @@
+recipe_tutorial
+4
+data/templates/Template_A 0 1
+data/templates/Template_B 1 2
+data/templates/Template_C 2 3
+data/templates/Template_D 3 4
+

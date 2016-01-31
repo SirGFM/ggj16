@@ -1,0 +1,7 @@
+Template_B
+0
+4
+data/items/Item_a.txt
+data/items/Item_b.txt
+data/items/Item_c.txt
+data/items/Item_d.txt
