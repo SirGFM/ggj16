@@ -184,15 +184,46 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
     /* TODO Load level from generator */
     do {
-        itemType pData[T_MAX];
-        int i;
+		int MAX_ITEMS = 32;
+		
+        itemType pData[MAX_ITEMS];
+		pData[0] = T_EYE;
+		pData[1] = T_PHOENIX_FEATHER;
+		pData[2] = T_WEB;
+		pData[3] = T_ROTATE_CW;
+		pData[4] = T_BONE;
+		pData[5] = T_MONKEY_EAR;
+		pData[6] = T_WAIT;
+		pData[7] = T_BAT_WING;
+		pData[8] = T_RAT_TAIL;
+		
+		pData[9] = T_EYE;
+		pData[10] = T_WEB;
+		pData[11] = T_ROTATE_CW;
+		pData[12] = T_WAIT;
+		pData[13] = T_MONKEY_EAR;
+		pData[14] = T_MOVE_HORIZONTAL;
+		pData[15] = T_BAT_WING;
+		pData[16] = T_RAT_TAIL;
 
-        i = 0;
-        while (i < T_MAX) {
-            pData[i] = i;
-            pData[i] = T_MOVE_VERTICAL;
-            i++;
-        }
+		pData[17] = T_EYE;
+		pData[18] = T_WAIT;
+		pData[19] = T_ROTATE_CW;
+		pData[20] = T_BONE;
+		pData[21] = T_MONKEY_EAR;
+		pData[22] = T_MOVE_HORIZONTAL;
+		pData[23] = T_WAIT;
+		pData[24] = T_RAT_TAIL;
+
+		pData[25] = T_EYE;
+		pData[26] = T_WEB;
+		pData[27] = T_ROTATE_CW;
+		pData[28] = T_WAIT;
+		pData[29] = T_MONKEY_EAR;
+		pData[30] = T_MOVE_HORIZONTAL;
+		pData[31] = T_BAT_WING;
+			
+		
         rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);
