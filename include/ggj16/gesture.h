@@ -48,6 +48,13 @@ void gesture_reset(gesture *pCtx);
 gfmRV gesture_update(gesture *pCtx);
 
 /**
+ * Mostly for debug, draw random stuff
+ *
+ * @param  [ in]pCtx The recognizer
+ */
+void gesture_draw(gesture *pGesture);
+
+/**
  * Retrieve the current gesture (if any)
  *
  * @param  [out]pItem The current gesture

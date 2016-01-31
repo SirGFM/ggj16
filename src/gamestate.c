@@ -315,6 +315,9 @@ gfmRV gs_draw() {
     rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
+    /* Draw info about the gesture */
+    gesture_draw(pGlobal->pGesture);
+
     rv = GFMRV_OK;
 __ret:
     return GFMRV_OK;

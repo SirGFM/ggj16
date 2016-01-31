@@ -39,6 +39,8 @@ struct stGesture {
     /** Flag that signals when the struct has been just reset, so it's properly
      * initialized */
     int justReset;
+    /** Allow a few frame (urg) of error when spinning */
+    int angErr;
 };
 
 /**
@@ -124,7 +126,7 @@ gfmRV gesture_update(gesture *pCtx) {
             curAng = PI / 2;
         }
         else {
-            curAng = -PI / 2;
+            curAng = 3 * PI / 2;
         }
     }
     else if (distCY == 0) {
@@ -163,16 +165,65 @@ gfmRV gesture_update(gesture *pCtx) {
 
     /** Only update the state if we know the previous state */
     if (!pCtx->justReset) {
+        double delta;
+
+        delta = curAng - pCtx->lastAng;
+        if ((delta >= 0.0 && pCtx->dAng >= 0.0)) {
+            pCtx->dAng += delta;
+            pCtx->angErr = 0;
+        }
+        else if (curAng < PI / 2 &&
+                pCtx->lastAng > 3 * PI / 2 &&
+                2 * PI + delta >= 0.0 &&
+                pCtx->dAng >= 0.0) {
+            /* Just went over 2*PI (corner case) */
+            pCtx->dAng += 2 * PI - delta;
+            pCtx->angErr = 0;
+        }
+        else if (delta <= 0.0 && pCtx->dAng <= 0.0) {
+            pCtx->dAng += delta;
+            pCtx->angErr = 0;
+        }
+        else if (curAng > 3 * PI / 2 &&
+                pCtx->lastAng < PI / 2 &&
+                delta - 2 * PI <= 0.0 &&
+                pCtx->dAng <= 0.0) {
+            /* Just went over 0 (corner case) */
+            pCtx->dAng += delta - 2 * PI;
+            pCtx->angErr = 0;
+        }
+        else if (delta != 0.0) {
+            /* Mouse on the opposite direction, reset */
+            pCtx->angErr++;
+            if (pCtx->angErr > 3) {
+                pCtx->dAng = 0.0;
+                pCtx->angErr = 0;
+            }
+        }
     }
 
     /* Store the current state to compare on the next frame */
     pCtx->lastX = mouseX;
     pCtx->lastY = mouseY;
     pCtx->lastAng = curAng;
+    pCtx->justReset = 0;
 
     rv = GFMRV_OK;
 __ret:
     return rv;
+}
+
+/**
+ * Mostly for debug, draw random stuff
+ *
+ * @param  [ in]pCtx The recognizer
+ */
+void gesture_draw(gesture *pGesture) {
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 0/*x*/, 120-8/*y*/,
+            (int)pGesture->dAng, 3/*numDigits*/, 0/*first ascii tile*/);
+    gfm_drawNumber(pGame->pCtx, pGfx->pSset8x8, 32/*x*/, 120-8/*y*/,
+            (int)(pGesture->dAng * 100) - ((int)pGesture->dAng) * 100,
+            3/*numDigits*/, 0/*first ascii tile*/);
 }
 
 /**
