@@ -15,7 +15,7 @@ enum enItemType {
     T_EYE,
     T_WEB,
     T_PHOENIX_FEATHER,
-    T_MONKEY_EAR,
+    T_SKULL,
     T_BONE,
     T_MUSHROOM,
     T_ROTATE_CW,

@@ -18,6 +18,7 @@
 #include <string.h>
 
 static int pCauldronAnim[] = {9, 10, 11, 12};
+static int pCauldronTrailAnim[] = { 48, 49, 50, 51 };
 
 /**
  * Release all alloc'ed memory
@@ -27,17 +28,16 @@ static int pCauldronAnim[] = {9, 10, 11, 12};
  */
 void cauldron_free(cauldron **ppCal) {
     /** Avoid errors */
-    if (!ppCal) {
+    if (!ppCal || !(*ppCal)) {
         return;
     }
 
     /** Release its sprite */
-    if ((*ppCal)->pSelf) {
-        gfmSprite_free(&((*ppCal)->pSelf));
-    }
+    gfmSprite_free(&((*ppCal)->pSelf));
+    gfmSprite_free(&((*ppCal)->pHeatTrail));
 
     /** Release the cauldron */
-    free(ppCal);
+    free(*ppCal);
     *ppCal = 0;
 }
 
@@ -59,7 +59,10 @@ gfmRV cauldron_getNew(cauldron **ppCal) {
     pCal = (cauldron*)malloc(sizeof(cauldron));
     ASSERT(pCal, GFMRV_ALLOC_FAILED);
     memset(pCal, 0x0, sizeof(cauldron));
+
     rv = gfmSprite_getNew(&(pCal->pSelf));
+    ASSERT(rv == GFMRV_OK, rv);
+    gfmSprite_getNew(&(pCal->pHeatTrail));
     ASSERT(rv == GFMRV_OK, rv);
 
     *ppCal = pCal;
@@ -96,6 +99,8 @@ gfmRV cauldron_init(cauldron *pCal, gfmParser *pParser) {
     int tile;
     /** Type of the current item */
     itemType type;
+    /** Index for the trail animation */
+    int trailAnim;
 
     ASSERT(pCal, GFMRV_ARGUMENTS_BAD);
     ASSERT(pParser, GFMRV_ARGUMENTS_BAD);
@@ -117,10 +122,10 @@ gfmRV cauldron_init(cauldron *pCal, gfmParser *pParser) {
     /* Set the tile and spriteset according to the type */
     width = 20;
     height = 18;
-    tile = 8;
-    pSset = pGfx->pSset64x64;
-    offx = -22;
-    offy = -19;
+    tile = 24;
+    pSset = pGfx->pSset32x32;
+    offx = 0;
+    offy = 0;
 
     /** Initialize the sprite */
     rv = gfmSprite_init(pCal->pSelf, x, y, width, height, pSset, offx, offy,
@@ -132,6 +137,19 @@ gfmRV cauldron_init(cauldron *pCal, gfmParser *pParser) {
             sizeof(pCauldronAnim) / sizeof(int) /* len  */, 16 /* fps */,
             0 /* loop */);
     ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmSprite_init(pCal->pHeatTrail, x + 3, y - 15, 16, 16,
+            pGfx->pSset16x16, offx, offy, pCal, type);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setFrame(pCal->pSelf, tile);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_addAnimation(&(trailAnim), pCal->pHeatTrail,
+            pCauldronTrailAnim, sizeof(pCauldronTrailAnim) / sizeof(int),
+            8 /* fps */, 1 /* loop */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_playAnimation(pCal->pHeatTrail, trailAnim);
+    ASSERT(rv == GFMRV_OK, rv);
+
 
     rv = GFMRV_OK;
 __ret:
@@ -148,6 +166,7 @@ gfmRV cauldron_doExplode(cauldron *pCal) {
     /** GFraMe return value */
     gfmRV rv;
 
+    pCal->didExplode = 1;
     rv = gfmSprite_playAnimation(pCal->pSelf, pCal->anim);
     pCal->anim = -1;
 
@@ -161,7 +180,17 @@ gfmRV cauldron_doExplode(cauldron *pCal) {
  * @return           GFraMe return value
  */
 gfmRV cauldron_update(cauldron *pCal) {
-    return gfmSprite_update(pCal->pSelf, pGame->pCtx);
+    /** GFraMe return value */
+    gfmRV rv;
+
+    rv = gfmSprite_update(pCal->pSelf, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_update(pCal->pHeatTrail, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
 }
 
 /**
@@ -171,7 +200,19 @@ gfmRV cauldron_update(cauldron *pCal) {
  * @return           GFraMe return value
  */
 gfmRV cauldron_draw(cauldron *pCal) {
-    return gfmSprite_draw(pCal->pSelf, pGame->pCtx);
+    /** GFraMe return value */
+    gfmRV rv;
+
+    rv = gfmSprite_draw(pCal->pSelf, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (!pCal->didExplode) {
+        rv = gfmSprite_draw(pCal->pHeatTrail, pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
 }
 
 /**

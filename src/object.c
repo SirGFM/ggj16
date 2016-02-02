@@ -44,7 +44,7 @@ struct stObject {
  */
 void object_free(object **ppObj) {
     /** Avoid errors */
-    if (!ppObj) {
+    if (!ppObj || !(*ppObj)) {
         return;
     }
 
@@ -54,7 +54,7 @@ void object_free(object **ppObj) {
     }
 
     /** Release the object */
-    free(ppObj);
+    free(*ppObj);
     *ppObj = 0;
 }
 

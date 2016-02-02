@@ -17,7 +17,7 @@ static char *pTypeStr[T_MAX] = {
     "eye",
     "web",
     "phoenix_feather",
-    "monkey_ear",
+    "skull",
     "bone",
     "mushroom",
     "rotate_cw",

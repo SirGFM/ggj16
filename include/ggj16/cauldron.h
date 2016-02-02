@@ -21,8 +21,12 @@ typedef struct stCauldron cauldron;
 struct stCauldron {
     /** The cauldron's sprite */
     gfmSprite *pSelf;
-    /* Cauldron's only animation */
+    /** The heat trail over the cauldron */
+    gfmSprite *pHeatTrail;
+    /** Cauldron's only animation */
     int anim;
+    /** Whether the cauldron exploded */
+    int didExplode;
 };
 
 /**

@@ -44,6 +44,7 @@ static char *dictStr[] = { "dummy" };
 static int dictType[] = { 0 };
 static int dictLen = sizeof(dictType) / sizeof(int);
 
+#if 0
 static int pBgAnim[] = {
 /* len|fps|loop|data */
     2 , 8 ,  1 ,79,82,
@@ -52,6 +53,7 @@ static int pBgAnim[] = {
     2 , 8 ,  1 ,143,146,
     2 , 8 ,  1 ,175,178
 };
+#endif /* 0 */
 
 /**
  * Release everything alloc'ed on init
@@ -82,6 +84,7 @@ gfmRV gs_init() {
     gamestate *pState;
 
     pParser = 0;
+    pState = 0;
 
     /* Check that the state is correct and there's none loaded */
     ASSERT(pGame->nextState == ST_GAME, GFMRV_INTERNAL_ERROR);
@@ -99,10 +102,12 @@ gfmRV gs_init() {
     rv = gfmTilemap_loadfStatic(pState->pBackground, pGame->pCtx,
             "map/map_map.gfm", dictStr, dictType, dictLen);
     ASSERT(rv == GFMRV_OK, rv);
+#if 0
     rv = gfmTilemap_addAnimationsStatic(pState->pBackground, pBgAnim);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmTilemap_recacheAnimations(pState->pBackground);
     ASSERT(rv == GFMRV_OK, rv);
+#endif /* 0 */
 
     /* Load all objects */
     rv = gfmParser_getNew(&pParser);
