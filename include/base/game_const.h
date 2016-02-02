@@ -9,9 +9,9 @@
 /* == Game's basic configurations =========================================== */
 
 /** Game's "organization" */
-#define ORG         "organization"
+#define ORG         "com.gfmgamecorner"
 /** Game's title */
-#define TITLE       "base"
+#define TITLE       "witch-s_spell"
 /** Config file name */
 #define CONF        "config.sav"
 /** Virtual window's width */

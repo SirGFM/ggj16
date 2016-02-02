@@ -18,17 +18,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define gfmTilemap_loadfStatic(pTMap, pCtx, pFilename, pDictNames, pDictTypes, dictLen) \
-    gfmTilemap_loadf(pTMap, pCtx, pFilename, sizeof(pFilename) - 1, pDictNames, pDictTypes, dictLen)
-static char *dictStr[] = { "dummy" };
-static int dictType[] = { 0 };
-static int dictLen = sizeof(dictType) / sizeof(int);
-
 struct stRecipeScroll {
     /** Tilemap used for rendering the current state */
     gfmTilemap *pRecipe;
-    /** Mask that hides the incoming items */
-    gfmTilemap *pMask;
     /** Recipe's vertical position (must be manually integrated) */
     double recipeY;
     /** Recipe's vertical speed */
@@ -60,9 +52,6 @@ void recipeScroll_free(recipeScroll **ppScroll) {
     if ((*ppScroll)->pRecipe) {
         gfmTilemap_free(&((*ppScroll)->pRecipe));
     }
-    if ((*ppScroll)->pMask) {
-        gfmTilemap_free(&((*ppScroll)->pMask));
-    }
     free(*ppScroll);
     *ppScroll = 0;
 }
@@ -89,17 +78,6 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 1/*w*/, 1/*h*/,
             -1/*defTile*/); 
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_getNew(&(pScroll->pMask));
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_init(pScroll->pMask, pGfx->pSset8x8, 3/*w*/, 20/*h*/,
-            -1/*defTile*/); 
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_loadfStatic(pScroll->pMask, pGame->pCtx,
-            "map/scrollMask.gfm", dictStr, dictType, dictLen);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    rv = gfmTilemap_setPosition(pScroll->pMask, 15 * 8, 0);
     ASSERT(rv == GFMRV_OK, rv);
 
     pScroll->recipeX = 16 * 8;
@@ -136,7 +114,7 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
 
     /* Update the visible recipe */
     rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 1/*w*/,
-            length * 2/*h*/, 352/*defTile*/); 
+            length * 2/*h*/, -1/*defTile*/); 
     rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
     pScroll->numItems = length;
@@ -147,7 +125,7 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
          * tile 352. Since each one spawns two tiles (the normal and a
          * highlighted version), retrieveing the tile is a simple matter of
          * calculating the correct index */
-        pData[i * 2 + 0] = 352 + (pItems[i] - T_RAT_TAIL) * 2;
+        pData[i * 2 + 0] = 64 + pItems[i] * 2;
         pData[i * 2 + 1] = -1;
         i++;
     }
@@ -249,8 +227,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
                 pScroll->done = 0;
 
                 /* Set expected item */
-                pScroll->expected  = (pData[tile * 2 + 0] - 352) / 2 +
-                        T_RAT_TAIL;
+                pScroll->expected  = (pData[tile * 2 + 0] - 64) / 2;
                 /* Clear motion */
                 gesture_reset(pGlobal->pGesture);
             }
@@ -300,8 +277,6 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
 
     rv = gfmTilemap_update(pScroll->pRecipe, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_update(pScroll->pMask, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -320,8 +295,6 @@ gfmRV recipeScroll_draw(recipeScroll *pScroll) {
 
     /* Draw the recipe bellow the mask, so it's partially hidden */
     rv = gfmTilemap_draw(pScroll->pRecipe, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_draw(pScroll->pMask, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;

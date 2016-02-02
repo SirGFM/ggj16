@@ -9,8 +9,7 @@
 #include <GFraMe/gfmError.h>
 
 enum enItemType {
-    T_CAULDRON = 0,
-    T_RAT_TAIL,
+    T_RAT_TAIL = 0,
     T_BAT_WING,
     T_EYE,
     T_WEB,
@@ -23,6 +22,7 @@ enum enItemType {
     T_WAIT, /* Doesn't work, do not use */
     T_MOVE_VERTICAL,
     T_MOVE_HORIZONTAL,
+    T_CAULDRON,
     T_MAX,
     T_NONE
 };

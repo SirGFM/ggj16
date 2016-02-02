@@ -38,6 +38,8 @@ gfmRV assets_load() {
     GEN_SPRITESET(16, 16, pGfx->texHandle);
     GEN_SPRITESET(32, 32, pGfx->texHandle);
     GEN_SPRITESET(64, 64, pGfx->texHandle);
+    GEN_SPRITESET(32, 128, pGfx->texHandle);
+    GEN_SPRITESET(256, 128, pGfx->texHandle);
 
     LOAD_SFX(song, "mml/song.mml");
 

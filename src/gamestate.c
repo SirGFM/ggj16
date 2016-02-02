@@ -25,12 +25,7 @@
 
 gfmGenArr_define(object);
 
-#define gfmTilemap_loadfStatic(pTMap, pCtx, pFilename, pDictNames, pDictTypes, dictLen) \
-    gfmTilemap_loadf(pTMap, pCtx, pFilename, sizeof(pFilename) - 1, pDictNames, pDictTypes, dictLen)
-
 struct stGamestate {
-    /** The background */
-    gfmTilemap *pBackground;
     /** List of objects */
     gfmGenArr_var(object, pObjects);
     /** Fire particles */
@@ -39,21 +34,6 @@ struct stGamestate {
     int curFire;
 };
 typedef struct stGamestate gamestate;
-
-static char *dictStr[] = { "dummy" };
-static int dictType[] = { 0 };
-static int dictLen = sizeof(dictType) / sizeof(int);
-
-#if 0
-static int pBgAnim[] = {
-/* len|fps|loop|data */
-    2 , 8 ,  1 ,79,82,
-    2 , 8 ,  1 ,80,83,
-    2 , 8 ,  1 ,111,114,
-    2 , 8 ,  1 ,143,146,
-    2 , 8 ,  1 ,175,178
-};
-#endif /* 0 */
 
 /**
  * Release everything alloc'ed on init
@@ -68,7 +48,6 @@ void gs_free() {
     cauldron_free(&(pGlobal->pCauldron));
     gfmGroup_free(&(pState->pFire));
     gfmGenArr_clean(pState->pObjects, object_free);
-    gfmTilemap_free(&(pState->pBackground));
     recipeScroll_free(&(pGlobal->pRecipe));
 }
 
@@ -93,21 +72,6 @@ gfmRV gs_init() {
     pState = (gamestate*)malloc(sizeof(gamestate));
     ASSERT(pState, GFMRV_ALLOC_FAILED);
     memset(pState, 0x0, sizeof(gamestate));
-
-    /* Load the background */
-    rv = gfmTilemap_getNew(&(pState->pBackground));
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_init(pState->pBackground, pGfx->pSset8x8, 1, 1, -1);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_loadfStatic(pState->pBackground, pGame->pCtx,
-            "map/map_map.gfm", dictStr, dictType, dictLen);
-    ASSERT(rv == GFMRV_OK, rv);
-#if 0
-    rv = gfmTilemap_addAnimationsStatic(pState->pBackground, pBgAnim);
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_recacheAnimations(pState->pBackground);
-    ASSERT(rv == GFMRV_OK, rv);
-#endif /* 0 */
 
     /* Load all objects */
     rv = gfmParser_getNew(&pParser);
@@ -243,9 +207,6 @@ gfmRV gs_update() {
     /* Update the scroller */
     rv = recipeScroll_update(pGlobal->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
-    /* Update the tilemap (e.g., if it's animated) */
-    rv = gfmTilemap_update(pState->pBackground, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
     /* Update all objects */
     gfmGenArr_callAll(pState->pObjects, object_update);
 
@@ -308,8 +269,8 @@ gfmRV gs_draw() {
     pState = (gamestate*)pGame->pState;
 
     /* Draw the background */
-    rv = gfmTilemap_draw(pState->pBackground, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset256x128, 0 /* x */, 0 /* y */,
+            1 /* tile */, 0 /* flip */);
     /* Draw the scroll */
     rv = recipeScroll_draw(pGlobal->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
@@ -322,6 +283,10 @@ gfmRV gs_draw() {
 
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
+
+    /* Draw the mask over the map */
+    rv = gfm_drawTile(pGame->pCtx, pGfx->pSset32x128, 120 /* x */, 0 /* y */,
+            13 /* tile */, 0 /* flip */);
 
     /* Draw info about the gesture */
     gesture_draw(pGlobal->pGesture);

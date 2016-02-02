@@ -11,7 +11,6 @@
 #include <string.h>
 
 static char *pTypeStr[T_MAX] = {
-    "cauldron",
     "rat_tail",
     "bat_wing",
     "eye",
@@ -24,7 +23,8 @@ static char *pTypeStr[T_MAX] = {
     "rotate_ccw",
     "wait",
     "move_horizontal",
-    "move_vertical"
+    "move_vertical",
+    "cauldron"
 };
 
 /**

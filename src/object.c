@@ -126,10 +126,10 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     y -= height;
     /* Set the tile and spriteset according to the type.
      * All types were set sequentially on the tile set, with the first on
-     * tile 352. Since each one spawns two tiles (the normal and a
+     * tile 64. Since each one spawns two tiles (the normal and a
      * highlighted version), retrieveing the tile is a simple matter of
      * calculating the correct index */
-    tile = 352 + (type - T_RAT_TAIL) * 2;
+    tile = 64 + type * 2;
     pSset = pGfx->pSset8x8;
 
     /** Initialize the sprite */
