@@ -14,6 +14,7 @@
           $(OBJDIR)/main.o         \
           $(OBJDIR)/object.o       \
           $(OBJDIR)/recipeScroll.o \
+          $(OBJDIR)/scrollItem.o   \
           $(OBJDIR)/type.o
 #=======================================================================
 

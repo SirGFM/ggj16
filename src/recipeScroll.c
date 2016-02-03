@@ -14,6 +14,7 @@
 
 #include <ggj16/gesture.h>
 #include <ggj16/recipeScroll.h>
+#include <ggj16/scrollItem.h>
 #include <ggj16/type.h>
 
 
@@ -22,7 +23,7 @@
 
 struct stRecipeScroll {
     /** Sprites (used in a round-robin fashion) for the "recipe map" */
-    gfmSprite *ppSpr[MAX_SCROLL_SPR];
+    scrollItem *ppItems[MAX_SCROLL_SPR];
     /** List of items on the current recipe */
     itemType *pRecipe;
     /** Recipe's vertical position (must be manually integrated) */
@@ -65,8 +66,8 @@ void recipeScroll_free(recipeScroll **ppScroll) {
     }
     i = 0;
     while (i < MAX_SCROLL_SPR) {
-        if ((*ppScroll)->ppSpr[i]) {
-            gfmSprite_free(&((*ppScroll)->ppSpr[i]));
+        if ((*ppScroll)->ppItems[i]) {
+            scrollItem_free(&((*ppScroll)->ppItems[i]));
         }
         i++;
     }
@@ -96,12 +97,13 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
 
     i = 0;
     while (i < MAX_SCROLL_SPR) {
-        rv = gfmSprite_getNew(&(pScroll->ppSpr[i]));
+        rv = scrollItem_getNew(&(pScroll->ppItems[i]));
         ASSERT(rv == GFMRV_OK, rv);
 
         i++;
     }
-    /** TODO Alloc the maximum number of objects on the recipe? */
+
+    /** TODO Alloc the maximum number of objects on a recipe? */
 
     pScroll->recipeX = 16 * 8;
     pScroll->recipeY = 8 * 8;
@@ -131,7 +133,7 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
     /** GFraMe return value */
     gfmRV rv;
     /** Iterate through the items */
-    int i, y;
+    int i, x, y;
 
     /* Expand the buffer as necessary */
     if (pScroll->recipeLen < length) {
@@ -159,15 +161,10 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
     /* Position all sprites */
     i = 0;
     y = pScroll->recipeY;
+    x = pScroll->recipeX;
     while (i < length && i < MAX_SCROLL_SPR) {
-        rv = gfmSprite_init(pScroll->ppSpr[i], pScroll->recipeX, y,
-                8 /* w */, 8 /* h */, pGfx->pSset8x8, 0 /* offx */,
-                0 /* offy */, 0 /* child */, 0 /* type */);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setFrame(pScroll->ppSpr[i], pItems[i] * 2 + FIRST_ITEM_TILE);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_setVerticalVelocity(pScroll->ppSpr[i],
-                pScroll->recipeSpeed);
+        rv = scrollItem_init(pScroll->ppItems[i], pScroll->recipeSpeed,
+                pItems[i], x, y);
         ASSERT(rv == GFMRV_OK, rv);
 
         y += 16;
@@ -226,30 +223,55 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
     /* Integrate the recipe's position */
     i = 0;
     while (i < pScroll->numItems && i < MAX_SCROLL_SPR) {
-        int tile, y;
-
-        rv = gfmSprite_update(pScroll->ppSpr[i], pGame->pCtx);
+        rv = scrollItem_update(pScroll->ppItems[i]);
         ASSERT(rv == GFMRV_OK, rv);
 
-        /* Clear (or set) the highlight, according to vertical position */
-        rv = gfmSprite_getVerticalPosition(&y, pScroll->ppSpr[i]);
-        ASSERT(rv == GFMRV_OK, rv);
-        rv = gfmSprite_getFrame(&tile, pScroll->ppSpr[i]);
-        ASSERT(rv == GFMRV_OK, rv);
+#define curStatus (pScroll->ppItems[i]->status)
 
-        /* Check if the sprite's lower half bellow the upper limit and its upper
-         * half is above the lower one */
-        if (y - SCROLL_AREA_POS > -2 && y - SCROLL_AREA_POS + 2 <= SCROLL_AREA_HEIGHT) {
-            tile |= 1;
+        if (curStatus == ITEM_RECYCLED) {
+            /* The item just went invisible, it may be recycled */
         }
-        else {
-            tile &= 0xfffffffe;
-            /* TODO Check if it's a new item that should be added */
+        else if ((curStatus & ITEM_JUST_ENTERED) == ITEM_JUST_ENTERED) {
+            /* The item just entered the area, set it as the expected */
+            gesture_reset(pGlobal->pGesture);
+            pScroll->expected  = pScroll->ppItems[i]->type;
+            pScroll->done = 0;
         }
-        rv = gfmSprite_setFrame(pScroll->ppSpr[i], tile);
-        ASSERT(rv == GFMRV_OK, rv);
+        else if (curStatus == ITEM_JUST_LEFT) {
+            /* The item just left, check that it was done */
+            if (!pScroll->done) {
+                /** All possibles actions states */
+                itemType pActions[4];
+                /** Iterate through actions */
+                int i;
 
-        /* TODO Check if it just went outside the visible area and should be recycled */
+                /* If an action was expected, check it now! */
+                rv = gesture_getCurrentGesture(pActions, pGlobal->pGesture);
+                ASSERT(rv == GFMRV_OK, rv);
+
+                i = 0;
+                while (i < 4) {
+                    if (pActions[i] == pScroll->expected) {
+                        pScroll->done = 1;
+                        break;
+                    }
+                    i++;
+                }
+                if (i == 4) {
+                    /* If no action was found, either the expected was
+                     * T_WAIT or an error happened */
+                    if (pScroll->expected == T_WAIT) {
+                        pScroll->done = 1;
+                    }
+                    else {
+                        pScroll->error = GFMRV_TRUE;
+                    }
+                }
+
+                /* Clean the state */
+                pScroll->expected = T_NONE;
+            }
+        }
 
         i++;
     }
@@ -345,7 +367,7 @@ gfmRV recipeScroll_draw(recipeScroll *pScroll) {
     /* Draw the recipe */
     i = 0;
     while (i < pScroll->numItems && i < MAX_SCROLL_SPR) {
-        rv = gfmSprite_draw(pScroll->ppSpr[i], pGame->pCtx);
+        rv = scrollItem_draw(pScroll->ppItems[i]);
         ASSERT(rv == GFMRV_OK, rv);
         i++;
     }
