@@ -81,9 +81,11 @@
  * was choosen considering there will never be sprites overlaping each other;
  * Also, items should have at least a 8 pixels of distance */
 #define MAX_SCROLL_SPR      8
- /** Define the area were items should be executed */
+/** Define the area were items should be executed */
 #define SCROLL_AREA_POS     38
 #define SCROLL_AREA_HEIGHT  11
+/** Items above this vertical position are completelly hidden */
+#define SCROLL_HIDDEN_Y     8
 
 #endif /* __GAME_CONST_H__ */
 

@@ -89,6 +89,7 @@ gfmRV scrollItem_init(scrollItem *pItem, double vy, itemType type, int x,
     /* Cache everything for ease of access */
     pItem->y = y;
     pItem->type = type;
+    pItem->status = 0;
 
     rv = GFMRV_OK;
 __ret:
@@ -130,6 +131,9 @@ gfmRV scrollItem_update(scrollItem *pItem) {
         }
         /* Set it as being inside the area */
         pItem->status |= ITEM_INSIDE;
+    }
+    else if (pItem->y < SCROLL_HIDDEN_Y) {
+        pItem->status = ITEM_RECYCLE;
     }
     else {
         if (pItem->status & ITEM_INSIDE) {
