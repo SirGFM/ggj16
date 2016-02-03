@@ -63,17 +63,27 @@
 /* == ... =================================================================== */
 
 /** Texture's transparent color */
-#define COLORKEY        0xFF00FF
+#define COLORKEY            0xFF00FF
 /** Quadtree position */
-#define QT_X            -8
-#define QT_Y            -8
+#define QT_X                -8
+#define QT_Y                -8
 /** Quadtree dimensions */
-#define QT_WIDTH        V_WIDTH + 16
-#define QT_HEIGHT       V_HEIGHT + 16
+#define QT_WIDTH            V_WIDTH + 16
+#define QT_HEIGHT           V_HEIGHT + 16
 /** Maximum number of times the quadtree will subdivide */
-#define QT_MAX_DEPTH    6
+#define QT_MAX_DEPTH        6
 /** Number of nodes required for the quadtree to subdivide */
-#define QT_MAX_NODES    10
+#define QT_MAX_NODES        10
+
+/** First item tile in a 8x8 tileset */
+#define FIRST_ITEM_TILE     64
+/** Maximum number of items on the recipe scroller; The current limit (8)
+ * was choosen considering there will never be sprites overlaping each other;
+ * Also, items should have at least a 8 pixels of distance */
+#define MAX_SCROLL_SPR      8
+ /** Define the area were items should be executed */
+#define SCROLL_AREA_POS     38
+#define SCROLL_AREA_HEIGHT  11
 
 #endif /* __GAME_CONST_H__ */
 

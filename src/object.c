@@ -3,6 +3,7 @@
  *
  * Parser for objects. Also implements Drag 'n' Drop.
  */
+#include <base/game_const.h>
 #include <base/game_ctx.h>
 
 #include <GFraMe/gfmAssert.h>
@@ -129,7 +130,7 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
      * tile 64. Since each one spawns two tiles (the normal and a
      * highlighted version), retrieveing the tile is a simple matter of
      * calculating the correct index */
-    tile = 64 + type * 2;
+    tile = FIRST_ITEM_TILE + type * 2;
     pSset = pGfx->pSset8x8;
 
     /** Initialize the sprite */

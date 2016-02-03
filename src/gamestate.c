@@ -153,15 +153,21 @@ gfmRV gs_init() {
     ASSERT(rv == GFMRV_OK, rv);
     /* TODO Load level from generator */
     do {
-        itemType pData[T_MAX];
-        int i;
+        itemType pData[] = {
+            T_RAT_TAIL,
+            T_BAT_WING,
+            T_EYE,
+            T_WEB,
+            T_PHOENIX_FEATHER,
+            T_SKULL,
+            T_BONE,
+            T_MUSHROOM,
+            T_ROTATE_CW,
+            T_ROTATE_CCW,
+            T_MOVE_VERTICAL,
+            T_MOVE_HORIZONTAL
+        };
 
-        i = 0;
-        while (i < T_MAX) {
-            pData[i] = i;
-            pData[i] = T_MOVE_VERTICAL;
-            i++;
-        }
         rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);

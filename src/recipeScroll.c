@@ -4,10 +4,12 @@
  * Manages the recipe of the current level. It displays a scrolling list and 
  * keep track of the current "expected input".
  */
+#include <base/game_const.h>
 #include <base/game_ctx.h>
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
+#include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmTilemap.h>
 
 #include <ggj16/gesture.h>
@@ -19,8 +21,10 @@
 #include <string.h>
 
 struct stRecipeScroll {
-    /** Tilemap used for rendering the current state */
-    gfmTilemap *pRecipe;
+    /** Sprites (used in a round-robin fashion) for the "recipe map" */
+    gfmSprite *ppSpr[MAX_SCROLL_SPR];
+    /** List of items on the current recipe */
+    itemType *pRecipe;
     /** Recipe's vertical position (must be manually integrated) */
     double recipeY;
     /** Recipe's vertical speed */
@@ -29,10 +33,14 @@ struct stRecipeScroll {
     int recipeX;
     /** Number of items on the recipe */
     int numItems;
+    /** Length of the recipe buffer */
+    int recipeLen;
     /** If the item was sucessfully added */
     int done;
     /* Flag when errors happen */
     gfmRV error;
+    /** Index to the current expected item */
+    int curItem;
     /* Current expected type */
     itemType expected;
 };
@@ -43,6 +51,9 @@ struct stRecipeScroll {
  * @param  [ in]ppScroll The object to be released
  */
 void recipeScroll_free(recipeScroll **ppScroll) {
+    /** Loop through all sprites */
+    int i;
+
     /* Avoid errors */
     if (!*ppScroll) {
         return;
@@ -50,8 +61,16 @@ void recipeScroll_free(recipeScroll **ppScroll) {
 
     /* Release the object and all of its attributes */
     if ((*ppScroll)->pRecipe) {
-        gfmTilemap_free(&((*ppScroll)->pRecipe));
+        free((*ppScroll)->pRecipe);
     }
+    i = 0;
+    while (i < MAX_SCROLL_SPR) {
+        if ((*ppScroll)->ppSpr[i]) {
+            gfmSprite_free(&((*ppScroll)->ppSpr[i]));
+        }
+        i++;
+    }
+
     free(*ppScroll);
     *ppScroll = 0;
 }
@@ -67,18 +86,22 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
     gfmRV rv;
     /** The new object */
     recipeScroll *pScroll;
+    /** Loop through all sprites */
+    int i;
 
     /* Alloc the object */
     pScroll = (recipeScroll*)malloc(sizeof(recipeScroll));
     ASSERT(pScroll, GFMRV_ALLOC_FAILED);
     memset(pScroll, 0x0, sizeof(recipeScroll));
 
-    /* Initialize the object's data */
-    rv = gfmTilemap_getNew(&(pScroll->pRecipe));
-    ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 1/*w*/, 1/*h*/,
-            -1/*defTile*/); 
-    ASSERT(rv == GFMRV_OK, rv);
+    i = 0;
+    while (i < MAX_SCROLL_SPR) {
+        rv = gfmSprite_getNew(&(pScroll->ppSpr[i]));
+        ASSERT(rv == GFMRV_OK, rv);
+
+        i++;
+    }
+    /** TODO Alloc the maximum number of objects on the recipe? */
 
     pScroll->recipeX = 16 * 8;
     pScroll->recipeY = 8 * 8;
@@ -105,38 +128,51 @@ __ret:
  */
 gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
         double speed) {
-    /* Recipe's tile data */
-    int *pData;
     /** GFraMe return value */
     gfmRV rv;
     /** Iterate through the items */
-    int i;
+    int i, y;
 
-    /* Update the visible recipe */
-    rv = gfmTilemap_init(pScroll->pRecipe, pGfx->pSset8x8, 1/*w*/,
-            length * 2/*h*/, -1/*defTile*/); 
-    rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
-    ASSERT(rv == GFMRV_OK, rv);
+    /* Expand the buffer as necessary */
+    if (pScroll->recipeLen < length) {
+        pScroll->pRecipe = (itemType*)realloc(pScroll->pRecipe,
+                sizeof(itemType) * length);
+        ASSERT(pScroll->pRecipe, GFMRV_ALLOC_FAILED);
+        pScroll->recipeLen = length;
+    }
+    /* Clean the previous recipe */
+    memset(pScroll->pRecipe, 0x0, sizeof(itemType) * length);
     pScroll->numItems = length;
 
-    i = 0;
-    while (i < length) {
-        /* All types were set sequentially on the tile set, with the first on
-         * tile 352. Since each one spawns two tiles (the normal and a
-         * highlighted version), retrieveing the tile is a simple matter of
-         * calculating the correct index */
-        pData[i * 2 + 0] = 64 + pItems[i] * 2;
-        pData[i * 2 + 1] = -1;
-        i++;
-    }
+    /* Copy the list */
+    memcpy(pScroll->pRecipe, pItems, sizeof(itemType) * length);
 
     /* Reset the recipe's position */
     pScroll->recipeX = 16 * 8;
     pScroll->recipeY = 8 * 8;
     pScroll->recipeSpeed = speed;
+    pScroll->curItem = 0;
 
     pScroll->expected = T_NONE;
     pScroll->error = GFMRV_FALSE;
+
+    /* Position all sprites */
+    i = 0;
+    y = pScroll->recipeY;
+    while (i < length && i < MAX_SCROLL_SPR) {
+        rv = gfmSprite_init(pScroll->ppSpr[i], pScroll->recipeX, y,
+                8 /* w */, 8 /* h */, pGfx->pSset8x8, 0 /* offx */,
+                0 /* offy */, 0 /* child */, 0 /* type */);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setFrame(pScroll->ppSpr[i], pItems[i] * 2 + FIRST_ITEM_TILE);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_setVerticalVelocity(pScroll->ppSpr[i],
+                pScroll->recipeSpeed);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        y += 16;
+        i++;
+    }
 
     rv = GFMRV_OK;
 __ret:
@@ -179,8 +215,6 @@ gfmRV recipeScroll_didFail(recipeScroll *pScroll) {
  * @return              GFraMe return value
  */
 gfmRV recipeScroll_update(recipeScroll *pScroll) {
-    /* Recipe's tile data */
-    int *pData;
     /** GFraMe return value */
     gfmRV rv;
     /** Iterate through the items */
@@ -189,26 +223,38 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
     /* Sanitize arguments */
     ASSERT(pScroll, GFMRV_ARGUMENTS_BAD);
 
-    if (pScroll->recipeSpeed > -64) {
-        pScroll->recipeSpeed -= 1 * ((double)pGame->elapsed) / 1000.0;
-    }
-
     /* Integrate the recipe's position */
-    pScroll->recipeY += pScroll->recipeSpeed *
-            ((double)pGame->elapsed / 1000.0);
-    rv = gfmTilemap_setPosition(pScroll->pRecipe, pScroll->recipeX,
-            (int)pScroll->recipeY);
-    rv = gfmTilemap_setPosition(pScroll->pRecipe, pScroll->recipeX, (int)pScroll->recipeY);
-    ASSERT(rv == GFMRV_OK, rv);
-
-    /* Clear the previous highlight in a lazy way */
-    rv = gfmTilemap_getData(&pData, pScroll->pRecipe);
-    ASSERT(rv == GFMRV_OK, rv);
     i = 0;
-    while (i < pScroll->numItems) {
-        pData[i * 2 + 0] &= 0xfffffffe;
+    while (i < pScroll->numItems && i < MAX_SCROLL_SPR) {
+        int tile, y;
+
+        rv = gfmSprite_update(pScroll->ppSpr[i], pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        /* Clear (or set) the highlight, according to vertical position */
+        rv = gfmSprite_getVerticalPosition(&y, pScroll->ppSpr[i]);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmSprite_getFrame(&tile, pScroll->ppSpr[i]);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        /* Check if the sprite's lower half bellow the upper limit and its upper
+         * half is above the lower one */
+        if (y - SCROLL_AREA_POS > -2 && y - SCROLL_AREA_POS + 2 <= SCROLL_AREA_HEIGHT) {
+            tile |= 1;
+        }
+        else {
+            tile &= 0xfffffffe;
+            /* TODO Check if it's a new item that should be added */
+        }
+        rv = gfmSprite_setFrame(pScroll->ppSpr[i], tile);
+        ASSERT(rv == GFMRV_OK, rv);
+
+        /* TODO Check if it just went outside the visible area and should be recycled */
+
         i++;
     }
+
+#if 0
     if ((int)pScroll->recipeY < 52) {
         /** Current active tile */
         int tile;
@@ -227,7 +273,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
                 pScroll->done = 0;
 
                 /* Set expected item */
-                pScroll->expected  = (pData[tile * 2 + 0] - 64) / 2;
+                pScroll->expected  = (pData[tile * 2 + 0] - FIRST_ITEM_TILE) / 2;
                 /* Clear motion */
                 gesture_reset(pGlobal->pGesture);
             }
@@ -277,6 +323,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
 
     rv = gfmTilemap_update(pScroll->pRecipe, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+#endif
 
     rv = GFMRV_OK;
 __ret:
@@ -292,10 +339,16 @@ __ret:
 gfmRV recipeScroll_draw(recipeScroll *pScroll) {
     /** GFraMe return value */
     gfmRV rv;
+    /** Iterate through the items */
+    int i;
 
-    /* Draw the recipe bellow the mask, so it's partially hidden */
-    rv = gfmTilemap_draw(pScroll->pRecipe, pGame->pCtx);
-    ASSERT(rv == GFMRV_OK, rv);
+    /* Draw the recipe */
+    i = 0;
+    while (i < pScroll->numItems && i < MAX_SCROLL_SPR) {
+        rv = gfmSprite_draw(pScroll->ppSpr[i], pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+        i++;
+    }
 
     rv = GFMRV_OK;
 __ret:
