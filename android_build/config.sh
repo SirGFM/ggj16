@@ -36,19 +36,20 @@ if [ "${PWD##*/}" != "android_build" ]; then
     fi
 fi
 
+source config.in
+
 # Check for a SDL2.0.3 clean package
-SDL2_2_0_3_pkg=/home/gfm/Downloads/SDL2-2.0.3.tar.gz
-if [ ! -f ${SDL2__2_0_3_pkg} ]; then
+if [ ! -f ${SDL2_2_0_3_pkg} ]; then
     echo "ERROR: Failed to find SDL2-2.0.3 package!"
     exit 1
 fi
 
 # Extract the project's template
-tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/android-project
+tar -zxf ${SDL2_2_0_3_pkg} SDL2-2.0.3/android-project
 # Extract the SDL2 src/header (must be recompiled for Android)
-tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/Android.mk
-tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/src
-tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/include
+tar -zxf ${SDL2_2_0_3_pkg} SDL2-2.0.3/Android.mk
+tar -zxf ${SDL2_2_0_3_pkg} SDL2-2.0.3/src
+tar -zxf ${SDL2_2_0_3_pkg} SDL2-2.0.3/include
 
 # Put all extracted files into the project directory
 mv SDL2-2.0.3/android-project/ .
@@ -70,19 +71,15 @@ ln -s ../SDL2-2.0.3/include/ SDL2
 cd -
 
 # Download the required libs
-C_SYNTH_URL=https://github.com/SirGFM/c_synth/archive/v1.0.2.tar.gz
-GFRAME_URL=https://github.com/SirGFM/GFraMe/archive/devel.tar.gz
-C_SYNTH_BASEDIR=c_synth-1.0.2
-GFRAME_BASEDIR=GFraMe-devel
 wget ${C_SYNTH_URL}
-mv v1.0.2.tar.gz c_synth.tar.gz
+mv ${C_SYNTH_ORIGIN_PKG} ${C_SYNTH_PKG}
 wget ${GFRAME_URL}
-mv devel.tar.gz gframe.tar.gz
+mv ${GFRAME_ORIGIN_PKG} ${GFRAME_PKG}
 
 # Extract the headers
 cd android-project/jni/include/
-tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/include/c_synth
-tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/include/GFraMe
+tar -zxf ../../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/include/c_synth
+tar -zxf ../../../${GFRAME_PKG} ${GFRAME_BASEDIR}/include/GFraMe
 mv ${C_SYNTH_BASEDIR}/include/c_synth .
 mv ${GFRAME_BASEDIR}/include/GFraMe .
 rmdir ${C_SYNTH_BASEDIR}/include/ ${C_SYNTH_BASEDIR}
@@ -91,10 +88,10 @@ cd -
 
 # Extract all sources
 cd android-project/jni/
-tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/src
-tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/Android.mk
-tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/src
-tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/Android.mk
+tar -zxf ../../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/src
+tar -zxf ../../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/Android.mk
+tar -zxf ../../../${GFRAME_PKG} ${GFRAME_BASEDIR}/src
+tar -zxf ../../../${GFRAME_PKG} ${GFRAME_BASEDIR}/Android.mk
 mv ${C_SYNTH_BASEDIR}/src ./c_synth
 mv ${C_SYNTH_BASEDIR}/Android.mk ./c_synth/
 mv ${GFRAME_BASEDIR}/src ./GFraMe

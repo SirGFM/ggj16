@@ -1,0 +1,31 @@
+
+#===============================================================================
+# File with configurable parts for main script
+#===============================================================================
+
+# SDL2 2.0.3's package
+SDL2_2_0_3_pkg=/home/gfm/Downloads/SDL2-2.0.3.tar.gz
+
+# c_synth's url
+C_SYNTH_URL=https://github.com/SirGFM/c_synth/archive/master.tar.gz
+# Name of the downloaded c_synth package
+C_SYNTH_ORIGIN_PKG=master.tar.gz
+# Actual name of the package
+C_SYNTH_PKG=c_synth.tar.gz
+# c_synth's basedir
+C_SYNTH_BASEDIR=c_synth-master
+
+# GFraMe's url
+GFRAME_URL=https://github.com/SirGFM/GFraMe/archive/devel.tar.gz
+# Name of the downloaded GFraMe package
+GFRAME_ORIGIN_PKG=devel.tar.gz
+# Actual name of the package
+GFRAME_PKG=gframe.tar.gz
+# GFraMe's basedir
+GFRAME_BASEDIR=GFraMe-devel
+
+# Path to the keystore (it's probably a bad idea to version this!)
+KEY_STORE=
+# Alias for the keystore (it's probably a bad idea to version this!)
+KEY_ALIAS=
+
