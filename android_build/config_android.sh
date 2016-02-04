@@ -69,6 +69,40 @@ cd android-project/jni/include/
 ln -s ../SDL2-2.0.3/include/ SDL2
 cd -
 
+# Download the required libs
+C_SYNTH_URL=https://github.com/SirGFM/c_synth/archive/v1.0.2.tar.gz
+GFRAME_URL=https://github.com/SirGFM/GFraMe/archive/devel.tar.gz
+C_SYNTH_BASEDIR=c_synth-1.0.2
+GFRAME_BASEDIR=GFraMe-devel
+wget ${C_SYNTH_URL}
+mv v1.0.2.tar.gz c_synth.tar.gz
+wget ${GFRAME_URL}
+mv devel.tar.gz gframe.tar.gz
+
+# Extract the headers
+cd android-project/jni/include/
+tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/include/c_synth
+tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/include/GFraMe
+mv ${C_SYNTH_BASEDIR}/include/c_synth .
+mv ${GFRAME_BASEDIR}/include/GFraMe .
+rmdir ${C_SYNTH_BASEDIR}/include/ ${C_SYNTH_BASEDIR}
+rmdir ${GFRAME_BASEDIR}/include/ ${GFRAME_BASEDIR}
+cd -
+
+# Extract all sources
+cd android-project/jni/
+tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/src
+tar -zxf ../../../c_synth.tar.gz ${C_SYNTH_BASEDIR}/Android.mk
+tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/src
+tar -zxf ../../../gframe.tar.gz ${GFRAME_BASEDIR}/Android.mk
+mv ${C_SYNTH_BASEDIR}/src ./c_synth
+mv ${C_SYNTH_BASEDIR}/Android.mk ./c_synth/
+mv ${GFRAME_BASEDIR}/src ./GFraMe
+mv ${GFRAME_BASEDIR}/Android.mk ./GFraMe/
+rmdir ${C_SYNTH_BASEDIR}
+rmdir ${GFRAME_BASEDIR}
+cd -
+
 # Create the game's main Java class
 JAVA_FILE=android-project/src/com/gfmgamecorner/Witchs_Spell.java
 touch ${JAVA_FILE}
@@ -80,10 +114,19 @@ echo "public class Witchs_Spell extends SDLActivity { }" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}
 
 # Request the user's key.store and key.alias
-echo -n "Insert the path to your key.store: "
-read KEY_STORE
-echo -n "Insert the alias of your key: "
-read KEY_ALIAS
-echo "key.store=${KEY_STORE}" > android-project/ant.properties
-echo "key.alias=${KEY_ALIS}" > android-project/ant.properties
+if [ -z "${KEY_STORE}" ]; then
+    echo -n "Insert the path to your key.store: "
+    read KEY_STORE
+fi
+if [ -z "${KEY_ALIAS}" ]; then
+    echo -n "Insert the alias of your key: "
+    read KEY_ALIAS
+fi
+
+if [ -z "${KEY_STORE}" ]; then
+    echo "key.store=${KEY_STORE}" > android-project/ant.properties
+fi
+if [ -z "${KEY_ALIAS}" ]; then
+    echo "key.alias=${KEY_ALIS}" > android-project/ant.properties
+fi
 
