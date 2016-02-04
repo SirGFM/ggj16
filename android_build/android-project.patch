@@ -1,6 +1,6 @@
 diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifest.xml
 --- android-project/AndroidManifest.xml	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/AndroidManifest.xml	2016-02-04 20:40:30.196185400 -0200
++++ android-project-new/AndroidManifest.xml	2016-02-04 21:27:49.547682100 -0200
 @@ -1,31 +1,21 @@
  <?xml version="1.0" encoding="utf-8"?>
 -<!-- Replace org.libsdl.app with the identifier of your game below, e.g.
@@ -51,7 +51,7 @@ diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifes
      <uses-feature android:glEsVersion="0x00020000" /> 
 diff -ruN android-project/default.properties android-project-new/default.properties
 --- android-project/default.properties	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/default.properties	2016-02-04 20:40:30.196706400 -0200
++++ android-project-new/default.properties	2016-02-04 21:27:49.548252100 -0200
 @@ -8,4 +8,4 @@
  # project structure.
  
@@ -60,13 +60,13 @@ diff -ruN android-project/default.properties android-project-new/default.propert
 +target=android-10
 diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android.mk
 --- android-project/jni/src/Android.mk	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/jni/src/Android.mk	2016-02-04 20:44:35.355553900 -0200
++++ android-project-new/jni/src/Android.mk	2016-02-04 21:28:05.760013100 -0200
 @@ -4,16 +4,29 @@
  
  LOCAL_MODULE := main
  
 -SDL_PATH := ../SDL
-+SDL_PATH := ../SDL2-2.0.3
++SDL_PATH := $(LOCAL_PATH)/../SDL2-2.0.3
  
 -LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include
 +LOCAL_C_INCLUDES := $(LOCAL_PATH)/../../include $(LOCAL_PATH)/../../../../include
@@ -74,30 +74,30 @@ diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android
  # Add your application source files here...
  LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
 -	YourSourceHere.c
-+        $(LOCAL_PATH)/../../../../assets.c \
-+        $(LOCAL_PATH)/../../../../cauldron.c \
-+        $(LOCAL_PATH)/../../../../collision.c \
-+        $(LOCAL_PATH)/../../../../config.c \
-+        $(LOCAL_PATH)/../../../../gamestate.c \
-+        $(LOCAL_PATH)/../../../../gesture.c \
-+        $(LOCAL_PATH)/../../../../global.c \
-+        $(LOCAL_PATH)/../../../../input.c \
-+        $(LOCAL_PATH)/../../../../main.c \
-+        $(LOCAL_PATH)/../../../../object.c \
-+        $(LOCAL_PATH)/../../../../recipeScroll.c \
-+        $(LOCAL_PATH)/../../../../scrollItem.c \
-+        $(LOCAL_PATH)/../../../../type.c
++        $(LOCAL_PATH)/../../../../src/assets.c \
++        $(LOCAL_PATH)/../../../../src/cauldron.c \
++        $(LOCAL_PATH)/../../../../src/collision.c \
++        $(LOCAL_PATH)/../../../../src/config.c \
++        $(LOCAL_PATH)/../../../../src/gamestate.c \
++        $(LOCAL_PATH)/../../../../src/gesture.c \
++        $(LOCAL_PATH)/../../../../src/global.c \
++        $(LOCAL_PATH)/../../../../src/input.c \
++        $(LOCAL_PATH)/../../../../src/main.c \
++        $(LOCAL_PATH)/../../../../src/object.c \
++        $(LOCAL_PATH)/../../../../src/recipeScroll.c \
++        $(LOCAL_PATH)/../../../../src/scrollItem.c \
++        $(LOCAL_PATH)/../../../../src/type.c
  
 -LOCAL_SHARED_LIBRARIES := SDL2
 +LOCAL_SHARED_LIBRARIES := SDL2 GFraMe CSynth
  
-+LOCAL_CFLAGS := -DGFRAME_MOBILE
++LOCAL_CFLAGS := -DGFRAME_MOBILE -DALIGN=4
  LOCAL_LDLIBS := -lGLESv1_CM -lGLESv2 -llog
  
  include $(BUILD_SHARED_LIBRARY)
 diff -ruN android-project/project.properties android-project-new/project.properties
 --- android-project/project.properties	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/project.properties	2016-02-04 20:40:30.197780600 -0200
++++ android-project-new/project.properties	2016-02-04 21:27:49.549292200 -0200
 @@ -11,4 +11,4 @@
  #proguard.config=${sdk.dir}/tools/proguard/proguard-android.txt:proguard-project.txt
  
@@ -106,7 +106,7 @@ diff -ruN android-project/project.properties android-project-new/project.propert
 +target=android-10
 diff -ruN android-project/res/values/strings.xml android-project-new/res/values/strings.xml
 --- android-project/res/values/strings.xml	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/res/values/strings.xml	2016-02-04 20:40:30.198456200 -0200
++++ android-project-new/res/values/strings.xml	2016-02-04 21:27:49.549969400 -0200
 @@ -1,4 +1,4 @@
  <?xml version="1.0" encoding="utf-8"?>
  <resources>
@@ -115,7 +115,7 @@ diff -ruN android-project/res/values/strings.xml android-project-new/res/values/
  </resources>
 diff -ruN android-project/src/org/libsdl/app/SDLActivity.java android-project-new/src/org/libsdl/app/SDLActivity.java
 --- android-project/src/org/libsdl/app/SDLActivity.java	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-04 20:40:30.199749500 -0200
++++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-04 21:27:49.551296400 -0200
 @@ -47,6 +47,8 @@
      // Load the .so
      static {
