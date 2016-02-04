@@ -46,13 +46,15 @@ tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/android-project
 mv SDL2-2.0.3/android-project/ .
 rmdir SDL2-2.0.3/
 
-# TODO Patch the directory
+# Patch the directory
+patch < android-project.patch
 
 # Create all directories
 mkdir -p android-project/res/drawable-ldpi/
 mkdir -p android-project/res/drawable-xxxhdpi/
 mkdir -p android-project/src/com/gfmgamecorner/
 mkdir -p android-project/assets/
+mkdir -p android-project/jni/include/
 
 # Create the game's main Java class
 JAVA_FILE=android-project/src/com/gfmgamecorner/Witchs_Spell.java
@@ -63,4 +65,6 @@ echo "import org.libsdl.app.SDLActivity;" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}
 echo "public class Witchs_Spell extends SDLActivity { }" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}
+
+# TODO Request the user's key.store and key.alis
 
