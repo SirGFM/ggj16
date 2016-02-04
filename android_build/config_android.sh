@@ -36,18 +36,26 @@ if [ "${PWD##*/}" != "android_build" ]; then
     fi
 fi
 
-# Check for a SDL2.0.3 clean package and extract it
+# Check for a SDL2.0.3 clean package
 SDL2_2_0_3_pkg=/home/gfm/Downloads/SDL2-2.0.3.tar.gz
 if [ ! -f ${SDL2__2_0_3_pkg} ]; then
     echo "ERROR: Failed to find SDL2-2.0.3 package!"
     exit 1
 fi
+
+# Extract the project's template
 tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/android-project
+# Extract the SDL2 src/header (must be recompiled for Android)
+tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/Android.mk
+tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/src
+tar -zxf ~/Downloads/SDL2-2.0.3.tar.gz SDL2-2.0.3/include
+
+# Put all extracted files into the project directory
 mv SDL2-2.0.3/android-project/ .
-rmdir SDL2-2.0.3/
+mv SDL2-2.0.3/ android-project/jni/
 
 # Patch the directory
-patch < android-project.patch
+patch -s -p0 < android-project.patch
 
 # Create all directories
 mkdir -p android-project/res/drawable-ldpi/
@@ -55,6 +63,11 @@ mkdir -p android-project/res/drawable-xxxhdpi/
 mkdir -p android-project/src/com/gfmgamecorner/
 mkdir -p android-project/assets/
 mkdir -p android-project/jni/include/
+
+# Create a symlink to the SDL2 includes
+cd android-project/jni/include/
+ln -s ../SDL2-2.0.3/include/ SDL2
+cd -
 
 # Create the game's main Java class
 JAVA_FILE=android-project/src/com/gfmgamecorner/Witchs_Spell.java
@@ -66,5 +79,11 @@ echo "" >> ${JAVA_FILE}
 echo "public class Witchs_Spell extends SDLActivity { }" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}
 
-# TODO Request the user's key.store and key.alis
+# Request the user's key.store and key.alias
+echo -n "Insert the path to your key.store: "
+read KEY_STORE
+echo -n "Insert the alias of your key: "
+read KEY_ALIAS
+echo "key.store=${KEY_STORE}" > android-project/ant.properties
+echo "key.alias=${KEY_ALIS}" > android-project/ant.properties
 
