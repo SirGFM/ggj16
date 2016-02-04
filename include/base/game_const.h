@@ -11,7 +11,7 @@
 /** Game's "organization" */
 #define ORG         "com.gfmgamecorner"
 /** Game's title */
-#define TITLE       "witch-s_spell"
+#define TITLE       "witchs_spell"
 /** Config file name */
 #define CONF        "config.sav"
 /** Virtual window's width */

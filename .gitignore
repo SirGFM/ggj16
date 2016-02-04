@@ -39,3 +39,6 @@ bin/*
 *.xcf
 *.png
 
+# Android project
+android_build/android-project/
+
