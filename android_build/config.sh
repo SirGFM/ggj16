@@ -77,10 +77,13 @@ mv ${C_SYNTH_ORIGIN_PKG} ${C_SYNTH_PKG}
 wget ${GFRAME_URL}
 mv ${GFRAME_ORIGIN_PKG} ${GFRAME_PKG}
 
+# URG... SCREW BASH AND WGET! >__<
+sleep 1
+
 # Extract the headers
 cd android-project/jni/include/
-tar -zxf ../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/include/c_synth
-tar -zxf ../../${GFRAME_PKG} ${GFRAME_BASEDIR}/include/GFraMe
+tar -zxf ../../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/include/c_synth
+tar -zxf ../../../${GFRAME_PKG} ${GFRAME_BASEDIR}/include/GFraMe
 mv ${C_SYNTH_BASEDIR}/include/c_synth .
 mv ${GFRAME_BASEDIR}/include/GFraMe .
 rmdir ${C_SYNTH_BASEDIR}/include/ ${C_SYNTH_BASEDIR}
@@ -89,10 +92,10 @@ cd -
 
 # Extract all sources
 cd android-project/jni/
-tar -zxf ../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/src
-tar -zxf ../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/Android.mk
-tar -zxf ../${GFRAME_PKG} ${GFRAME_BASEDIR}/src
-tar -zxf ../${GFRAME_PKG} ${GFRAME_BASEDIR}/Android.mk
+tar -zxf ../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/src
+tar -zxf ../../${C_SYNTH_PKG} ${C_SYNTH_BASEDIR}/Android.mk
+tar -zxf ../../${GFRAME_PKG} ${GFRAME_BASEDIR}/src
+tar -zxf ../../${GFRAME_PKG} ${GFRAME_BASEDIR}/Android.mk
 mv ${C_SYNTH_BASEDIR}/src ./c_synth
 mv ${C_SYNTH_BASEDIR}/Android.mk ./c_synth/
 mv ${GFRAME_BASEDIR}/src ./GFraMe
@@ -100,6 +103,9 @@ mv ${GFRAME_BASEDIR}/Android.mk ./GFraMe/
 rmdir ${C_SYNTH_BASEDIR}
 rmdir ${GFRAME_BASEDIR}
 cd -
+
+# Remove the packages (now that they've been used)
+rm -f ${C_SYNTH_PKG} ${GFRAME_PKG}
 
 # Create the game's main Java class
 JAVA_FILE=android-project/src/com/gfmgamecorner/Witchs_Spell.java
