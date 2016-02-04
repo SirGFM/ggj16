@@ -21,6 +21,13 @@
 /** Required by memset() */
 #include <string.h>
 
+/** Since SDL2 isn't included here, but it requires main to be actually called
+ * SDL_main, simply substitute it... >_< */
+#if defined GFRAME_MOBILE
+#  define main SDL_main
+#endif
+
+
 /**
  * Main loop. Handles waiting for input, issuing update and draw, and switch the
  * current state
