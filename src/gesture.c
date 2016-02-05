@@ -63,7 +63,7 @@ struct stGesture {
  * @param  [ in]ppCtx The recognizer
  */
 void gesture_free(gesture **ppCtx) {
-    if (!ppCtx) {
+    if (!ppCtx || !(*ppCtx)) {
         return;
     }
 

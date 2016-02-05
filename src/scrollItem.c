@@ -22,7 +22,7 @@
  * @param  [ in]ppItem The item
  */
 void scrollItem_free(scrollItem **ppItem) {
-    if (!(*ppItem)) {
+    if (!ppItem || !(*ppItem)) {
         return;
     }
 
