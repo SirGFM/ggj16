@@ -157,6 +157,10 @@ int main(int argc, char *argv[]) {
     }
     ASSERT(rv == GFMRV_OK, rv);
 
+#if !defined(GFRAME_MOBILE)
+    rv = gfm_initGameFullScreen(pGame->pCtx, V_WIDTH, V_HEIGHT,
+            pConfig->resolution, CAN_RESIZE, pConfig->flags & CFG_VSYNC);
+#else
     if (pConfig->flags & CFG_FULLSCREEN) {
         /* Initialize the game window in fullscreen mode */
         rv = gfm_initGameFullScreen(pGame->pCtx, V_WIDTH, V_HEIGHT,
@@ -172,6 +176,7 @@ int main(int argc, char *argv[]) {
         rv = config_saveError();
         goto __ret;
     }
+#endif
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Initialize the audio */
