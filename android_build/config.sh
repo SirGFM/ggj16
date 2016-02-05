@@ -5,9 +5,13 @@
 #-------------------------------------------------------------------------------
 # Note about patching:
 #  - To create patches:
-#    - diff -ruN orig/ new/ > file.patch
+#    $ diff -ruN orig/ new/ > file.patch
 #  - To patch stuff:
-#    - patch -s -p0 < file.patch
+#    $ patch -s -p0 < file.patch
+#-------------------------------------------------------------------------------
+# Note about the setup:
+#  - Don't forget to run:
+#    $ android update project -n ProjectName -p . -t "android-10"
 #-------------------------------------------------------------------------------
 # Note about icons:
 #  -    ldpi: 36x36
@@ -66,6 +70,13 @@ mkdir -p android-project/src/com/gfmgamecorner/
 mkdir -p android-project/assets/
 mkdir -p android-project/jni/include/
 
+# Add all assets
+cd android-project/assets/
+cp -r ../../../assets/gfx/ .
+cp -r ../../../assets/map/ .
+cp -r ../../../assets/mml/ .
+cd -
+
 # Create a symlink to the SDL2 includes
 cd android-project/jni/include/
 ln -s ../SDL2-2.0.3/include/ SDL2
@@ -110,7 +121,7 @@ rm -f ${C_SYNTH_PKG} ${GFRAME_PKG}
 # Create the game's main Java class
 JAVA_FILE=android-project/src/com/gfmgamecorner/Witchs_Spell.java
 touch ${JAVA_FILE}
-echo "com.gfmgamecorner.witchs_spell" >> ${JAVA_FILE}
+echo "package com.gfmgamecorner.witchs_spell;" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}
 echo "import org.libsdl.app.SDLActivity;" >> ${JAVA_FILE}
 echo "" >> ${JAVA_FILE}

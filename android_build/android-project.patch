@@ -111,7 +111,7 @@ diff -ruN android-project/res/values/strings.xml android-project-new/res/values/
  <?xml version="1.0" encoding="utf-8"?>
  <resources>
 -    <string name="app_name">SDL App</string>
-+    <string name="app_name">Witch's Spell</string>
++    <string name="app_name">Witch\'s Spell</string>
  </resources>
 diff -ruN android-project/src/org/libsdl/app/SDLActivity.java android-project-new/src/org/libsdl/app/SDLActivity.java
 --- android-project/src/org/libsdl/app/SDLActivity.java	2014-03-15 23:31:45.000000000 -0300
@@ -120,8 +120,8 @@ diff -ruN android-project/src/org/libsdl/app/SDLActivity.java android-project-ne
      // Load the .so
      static {
          System.loadLibrary("SDL2");
-+        System.loadLibrary("GFraMe");
 +        System.loadLibrary("CSynth");
++        System.loadLibrary("GFraMe");
          //System.loadLibrary("SDL2_image");
          //System.loadLibrary("SDL2_mixer");
          //System.loadLibrary("SDL2_net");
