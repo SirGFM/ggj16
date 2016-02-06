@@ -45,10 +45,16 @@ void gs_free() {
     /* Retrieve the current state from the global one */
     pState = (gamestate*)pGame->pState;
 
+    if (!pState) {
+        return;
+    }
+
     cauldron_free(&(pGlobal->pCauldron));
     gfmGroup_free(&(pState->pFire));
     gfmGenArr_clean(pState->pObjects, object_free);
     recipeScroll_free(&(pGlobal->pRecipe));
+
+    free(pState);
 }
 
 /**

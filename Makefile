@@ -12,6 +12,7 @@
           $(OBJDIR)/global.o       \
           $(OBJDIR)/input.o        \
           $(OBJDIR)/main.o         \
+          $(OBJDIR)/menustate.o    \
           $(OBJDIR)/object.o       \
           $(OBJDIR)/recipeScroll.o \
           $(OBJDIR)/scrollItem.o   \

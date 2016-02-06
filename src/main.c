@@ -15,6 +15,7 @@
 #include <GFraMe/gframe.h>
 
 #include <ggj16/gamestate.h>
+#include <ggj16/menustate.h>
 
 /** Required by malloc() and free() */
 #include <stdlib.h>
@@ -42,6 +43,8 @@ gfmRV main_loop() {
         if (pGame->nextState != ST_NONE) {
             /* Init the current state, if switching */
             switch (pGame->nextState) {
+                case ST_MENU_INTRO:
+                case ST_MENU: rv = ms_init(); break;
                 case ST_GAME: rv = gs_init(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
@@ -67,6 +70,8 @@ gfmRV main_loop() {
 
             /* Update the current state */
             switch (pGame->curState) {
+                case ST_MENU_INTRO: rv = ms_introUpdate(); break;
+                case ST_MENU: rv = ms_update(); break;
                 case ST_GAME: rv = gs_update(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
@@ -82,6 +87,8 @@ gfmRV main_loop() {
 
             /* Render the current state */
             switch (pGame->curState) {
+                case ST_MENU_INTRO:
+                case ST_MENU: rv = ms_draw(); break;
                 case ST_GAME: rv = gs_draw(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
@@ -101,10 +108,11 @@ gfmRV main_loop() {
         if (pGame->nextState != ST_NONE) {
             /* Clear the current state, if switching */
             switch (pGame->curState) {
+                case ST_MENU_INTRO:
+                case ST_MENU: ms_free(); break;
                 case ST_GAME: gs_free(); break;
                 default: ASSERT(0, GFMRV_INTERNAL_ERROR);
             }
-            ASSERT(rv == GFMRV_OK, rv);
 
             pGame->curState = ST_NONE;
         }
@@ -218,7 +226,7 @@ int main(int argc, char *argv[]) {
     ASSERT(rv == GFMRV_OK, rv);
 #endif
 
-    pGame->nextState = ST_GAME;
+    pGame->nextState = ST_MENU_INTRO;
 
     /* Play the song */
 #if !defined(DEBUG)
