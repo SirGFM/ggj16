@@ -157,7 +157,7 @@ int main(int argc, char *argv[]) {
     }
     ASSERT(rv == GFMRV_OK, rv);
 
-#if !defined(GFRAME_MOBILE)
+#if defined(GFRAME_MOBILE)
     rv = gfm_initGameFullScreen(pGame->pCtx, V_WIDTH, V_HEIGHT,
             pConfig->resolution, CAN_RESIZE, pConfig->flags & CFG_VSYNC);
 #else
