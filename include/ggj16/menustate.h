@@ -26,6 +26,11 @@ gfmRV ms_init();
 gfmRV ms_introUpdate();
 
 /**
+ * Tweens the logo to the proper position
+ */
+gfmRV ms_tweenUpdate();
+
+/**
  * Update everything
  */
 gfmRV ms_update();

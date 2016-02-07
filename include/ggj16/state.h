@@ -9,6 +9,7 @@
 enum enState {
     ST_NONE = 0,
     ST_MENU_INTRO,
+    ST_MENU_TWEEN,
     ST_MENU,
     ST_GAME,
     ST_MAX

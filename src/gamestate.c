@@ -55,6 +55,7 @@ void gs_free() {
     recipeScroll_free(&(pGlobal->pRecipe));
 
     free(pState);
+    pGame->pState = 0;
 }
 
 /**

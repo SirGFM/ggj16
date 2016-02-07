@@ -45,6 +45,9 @@ void ms_free() {
     /* Release everything else */
     gfmText_free(&(pState->pLoadingTxt));
     gameLogo_free(&(pState->pLogo));
+
+    free(pState);
+    pGame->pState = 0;
 }
 
 /**
@@ -126,6 +129,34 @@ gfmRV ms_introUpdate() {
     ASSERT(rv == GFMRV_OK, rv);
 
     if (pGame->loadedAssets >= 1) {
+        pGame->curState = ST_MENU_TWEEN;
+        rv = gfmText_setTextStatic(pState->pLoadingTxt, "GAME LOADED",
+                1 /* doCopy */);
+    }
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+/**
+ * Tweens the logo to the proper position
+ */
+gfmRV ms_tweenUpdate() {
+    /** GFraMe return value */
+    gfmRV rv;
+    /** The current state */
+    menustate *pState;
+
+    /* Retrieve the current state from the global one */
+    pState = (menustate*)pGame->pState;
+
+    rv = gfmText_update(pState->pLoadingTxt, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gameLogo_updateTween(pState->pLogo);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    if (gameLogo_didTweenFinish(pState->pLogo) == GFMRV_TRUE) {
         pGame->curState = ST_MENU;
     }
 
@@ -166,7 +197,7 @@ gfmRV ms_draw() {
     rv = gameLogo_draw(pState->pLogo);
     ASSERT(rv == GFMRV_OK, rv);
 
-    if (pGame->curState == ST_MENU_INTRO) {
+    if (pGame->curState != ST_MENU) {
         /* Only render the 'loading' text if on the first part */
         rv = gfmText_draw(pState->pLoadingTxt, pGame->pCtx);
         ASSERT(rv == GFMRV_OK, rv);

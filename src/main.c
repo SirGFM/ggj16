@@ -17,6 +17,9 @@
 #include <ggj16/gamestate.h>
 #include <ggj16/menustate.h>
 
+#if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+#  include <signal.h>
+#endif
 /** Required by malloc() and free() */
 #include <stdlib.h>
 /** Required by memset() */
@@ -44,9 +47,16 @@ gfmRV main_loop() {
             /* Init the current state, if switching */
             switch (pGame->nextState) {
                 case ST_MENU_INTRO:
+                case ST_MENU_TWEEN:
                 case ST_MENU: rv = ms_init(); break;
                 case ST_GAME: rv = gs_init(); break;
-                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+                default: {
+#  if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+                    /* Unhandled state, do something! */
+                    raise(SIGINT);
+#endif
+                    ASSERT(0, GFMRV_INTERNAL_ERROR);
+                }
             }
             ASSERT(rv == GFMRV_OK, rv);
 
@@ -71,9 +81,16 @@ gfmRV main_loop() {
             /* Update the current state */
             switch (pGame->curState) {
                 case ST_MENU_INTRO: rv = ms_introUpdate(); break;
+                case ST_MENU_TWEEN: rv = ms_tweenUpdate(); break;
                 case ST_MENU: rv = ms_update(); break;
                 case ST_GAME: rv = gs_update(); break;
-                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+                default: {
+#  if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+                    /* Unhandled state, do something! */
+                    raise(SIGINT);
+#endif
+                    ASSERT(0, GFMRV_INTERNAL_ERROR);
+                }
             }
             ASSERT(rv == GFMRV_OK, rv);
 
@@ -88,9 +105,16 @@ gfmRV main_loop() {
             /* Render the current state */
             switch (pGame->curState) {
                 case ST_MENU_INTRO:
+                case ST_MENU_TWEEN:
                 case ST_MENU: rv = ms_draw(); break;
                 case ST_GAME: rv = gs_draw(); break;
-                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+                default: {
+#  if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+                    /* Unhandled state, do something! */
+                    raise(SIGINT);
+#endif
+                    ASSERT(0, GFMRV_INTERNAL_ERROR);
+                }
             }
             ASSERT(rv == GFMRV_OK, rv);
 
@@ -109,9 +133,16 @@ gfmRV main_loop() {
             /* Clear the current state, if switching */
             switch (pGame->curState) {
                 case ST_MENU_INTRO:
+                case ST_MENU_TWEEN:
                 case ST_MENU: ms_free(); break;
                 case ST_GAME: gs_free(); break;
-                default: ASSERT(0, GFMRV_INTERNAL_ERROR);
+                default: {
+#  if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
+                    /* Unhandled state, do something! */
+                    raise(SIGINT);
+#endif
+                    ASSERT(0, GFMRV_INTERNAL_ERROR);
+                }
             }
 
             pGame->curState = ST_NONE;

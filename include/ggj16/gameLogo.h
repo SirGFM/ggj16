@@ -40,6 +40,14 @@ gfmRV gameLogo_getNew(gameLogo **ppLogo);
 gfmRV gameLogo_centralize(gameLogo *pLogo);
 
 /**
+ * Check whether the logo has finished tweening
+ *
+ * @param  [ in]pLogo The logo
+ * @return            GFMRV_TRUE, GFMRV_FALSE
+ */
+gfmRV gameLogo_didTweenFinish(gameLogo *pLogo);
+
+/**
  * Update the logo during the intro state. It moves toward a wall and gets
  * reflected in a random direction
  *

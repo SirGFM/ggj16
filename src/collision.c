@@ -14,7 +14,6 @@
 #include <GFraMe/gfmTypes.h>
 
 #if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
-#include <stdlib.h>
 #  include <signal.h>
 #endif
 

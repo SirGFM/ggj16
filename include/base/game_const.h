@@ -71,6 +71,9 @@
 #define LOGO_SPEED          64.0
 /** Prime module used when calculating the logo's speed */
 #define LOGO_MODULE         13463
+/** Define the logo's centralized position */
+#define LOGO_X              ((V_WIDTH - LOGO_WIDTH) / 2)
+#define LOGO_Y              16
 
 /** Texture's transparent color */
 #define COLORKEY            0xFF00FF
