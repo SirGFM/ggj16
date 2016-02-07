@@ -62,6 +62,16 @@
 
 /* == ... =================================================================== */
 
+/** The logo's dimensions */
+#define LOGO_WIDTH          96
+#define LOGO_HEIGHT         32
+/** The logo's sprite offset */
+#define LOGO_OFFX           -6
+/** The logo's speed */
+#define LOGO_SPEED          64.0
+/** Prime module used when calculating the logo's speed */
+#define LOGO_MODULE         13463
+
 /** Texture's transparent color */
 #define COLORKEY            0xFF00FF
 /** Quadtree position */

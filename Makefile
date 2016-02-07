@@ -8,6 +8,7 @@
           $(OBJDIR)/collision.o    \
           $(OBJDIR)/config.o       \
           $(OBJDIR)/gesture.o      \
+          $(OBJDIR)/gameLogo.o     \
           $(OBJDIR)/gamestate.o    \
           $(OBJDIR)/global.o       \
           $(OBJDIR)/input.o        \

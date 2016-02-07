@@ -11,7 +11,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmText.h>
 
-//#include <ggj16/gameLogo.h>
+#include <ggj16/gameLogo.h>
 #include <ggj16/menustate.h>
 
 #include <stdlib.h>
@@ -19,7 +19,7 @@
 
 struct stMenustate {
     /** The game's logo */
-    //gameLogo *pLogo;
+    gameLogo *pLogo;
     /** Text that displays while loading */
     gfmText *pLoadingTxt;
     /** Countdown for reseting the loading text */
@@ -44,6 +44,7 @@ void ms_free() {
 
     /* Release everything else */
     gfmText_free(&(pState->pLoadingTxt));
+    gameLogo_free(&(pState->pLogo));
 }
 
 /**
@@ -60,6 +61,11 @@ gfmRV ms_init() {
     ASSERT(pState, GFMRV_ALLOC_FAILED);
     memset(pState, 0x0, sizeof(menustate));
 
+    /* Initialize the logo */
+    rv = gameLogo_getNew(&(pState->pLogo));
+    ASSERT(rv == GFMRV_OK, rv);
+
+    /* Initialize the '--LOADING--' text */
     rv = gfmText_getNew(&(pState->pLoadingTxt));
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmText_init(pState->pLoadingTxt, (V_WIDTH - 11 * 8) / 2 /* x */,
@@ -116,6 +122,9 @@ gfmRV ms_introUpdate() {
     rv = gfmText_update(pState->pLoadingTxt, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
+    rv = gameLogo_updateIntro(pState->pLogo);
+    ASSERT(rv == GFMRV_OK, rv);
+
     rv = GFMRV_OK;
 __ret:
     return rv;
@@ -149,6 +158,9 @@ gfmRV ms_draw() {
 
     /* Retrieve the current state from the global one */
     pState = (menustate*)pGame->pState;
+
+    rv = gameLogo_draw(pState->pLogo);
+    ASSERT(rv == GFMRV_OK, rv);
 
     if (pGame->curState == ST_MENU_INTRO) {
         /* Only render the 'loading' text if on the first part */
