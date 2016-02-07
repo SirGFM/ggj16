@@ -23,6 +23,8 @@ struct stCauldron {
     gfmSprite *pSelf;
     /** The heat trail over the cauldron */
     gfmSprite *pHeatTrail;
+    /** The potion drip animation */
+    gfmSprite *pDrip;
     /** Cauldron's only animation */
     int anim;
     /** Whether the cauldron exploded */
