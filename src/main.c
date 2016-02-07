@@ -230,8 +230,10 @@ int main(int argc, char *argv[]) {
 
     /* Play the song */
 #if !defined(DEBUG)
-    rv = gfm_playAudio(0, pGame->pCtx, pAudio->song, 1.0);
-    ASSERT(rv == GFMRV_OK, rv);
+    if (pGame->loadedAssets >= 1) {
+        rv = gfm_playAudio(0, pGame->pCtx, pAudio->song, 1.0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
 #endif
 
     /* Initialize the main loop */

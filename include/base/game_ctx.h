@@ -116,6 +116,8 @@ struct stGameCtx {
     enum enState nextState;
     /** Time elapsed since the previous frame, in miliseconds */
     int elapsed;
+    /** How many assets have been loaded already */
+    int loadedAssets;
 };
 
 /** Store all handles to texture and spritesets' pointers */

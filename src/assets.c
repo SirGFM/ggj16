@@ -10,6 +10,20 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
 
+enum {
+    SONG_HND,
+    MAX_HND
+};
+
+static gfmAssetType pType[MAX_HND] = {
+    ASSET_AUDIO
+};
+static char *ppPath[MAX_HND] = {
+    "mml/song.mml"
+};
+static const int numAssets = MAX_HND;
+static int *ppHandles[MAX_HND];
+
 /**
  * Load all assets
  *
@@ -43,9 +57,12 @@ gfmRV assets_load() {
     GEN_SPRITESET(128, 32, pGfx->texHandle);
     GEN_SPRITESET(256, 128, pGfx->texHandle);
 
-#if !defined(DEBUG)
-    LOAD_SFX(song, "mml/song.mml");
-#endif
+    /* Retrieve the audio's handle, so it can be passed to the loader thread */
+    ppHandles[0] = &(pAudio->song);
+
+    rv = gfm_loadAssetsAsync(&(pGame->loadedAssets), pGame->pCtx, pType, ppPath,
+            ppHandles, (int)numAssets);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:

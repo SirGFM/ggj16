@@ -125,6 +125,10 @@ gfmRV ms_introUpdate() {
     rv = gameLogo_updateIntro(pState->pLogo);
     ASSERT(rv == GFMRV_OK, rv);
 
+    if (pGame->loadedAssets >= 1) {
+        pGame->curState = ST_MENU;
+    }
+
     rv = GFMRV_OK;
 __ret:
     return rv;
