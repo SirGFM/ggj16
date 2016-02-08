@@ -6,6 +6,7 @@
 #ifndef __GESTURE_STRUCT__
 #define __GESTURE_STRUCT__
 
+typedef enum enMoveState moveState;
 typedef struct stGesture gesture;
 
 #endif /* __GESTURE_STRUCT__ */
@@ -16,6 +17,13 @@ typedef struct stGesture gesture;
 #include <GFraMe/gfmError.h>
 
 #include <ggj16/type.h>
+
+enum enMoveState {
+    MOVE_LEFT  = 0x0001,
+    MOVE_RIGHT = 0x0002,
+    MOVE_UP    = 0x0004,
+    MOVE_DOWN  = 0x0008
+};
 
 /**
  * Release the struct

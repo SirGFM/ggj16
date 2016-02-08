@@ -74,6 +74,11 @@
 /** Define the logo's centralized position */
 #define LOGO_X              ((V_WIDTH - LOGO_WIDTH) / 2)
 #define LOGO_Y              16
+/** Maximum distance the logo can 'float' on the main menu */
+#define LOGO_MAX_DIST       4
+/** Logo's acceleration and maximum speed */
+#define LOGO_ACC            16
+#define LOGO_MAX_SPEED      10
 
 /** Texture's transparent color */
 #define COLORKEY            0xFF00FF
@@ -99,6 +104,9 @@
 #define SCROLL_AREA_HEIGHT  11
 /** Items above this vertical position are completelly hidden */
 #define SCROLL_HIDDEN_Y     8
+
+/** Time (in miliseconds) during which gesture errors are ignored */
+#define GESTURE_ERR_TIME    66
 
 #endif /* __GAME_CONST_H__ */
 

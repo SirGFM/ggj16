@@ -11,6 +11,7 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gfmText.h>
 
+#include <ggj16/gesture.h>
 #include <ggj16/gameLogo.h>
 #include <ggj16/menustate.h>
 
@@ -81,6 +82,8 @@ gfmRV ms_init() {
     ASSERT(rv == GFMRV_OK, rv);
 
     pState->loadingResetTime = 2000;
+
+    gesture_reset(pGlobal->pGesture);
 
     /* Store the current state for later use */
     pGame->pState = (void*)pState;
@@ -158,6 +161,7 @@ gfmRV ms_tweenUpdate() {
 
     if (gameLogo_didTweenFinish(pState->pLogo) == GFMRV_TRUE) {
         pGame->curState = ST_MENU;
+        //pGame->nextState = ST_GAME;
     }
 
     rv = GFMRV_OK;
@@ -176,6 +180,9 @@ gfmRV ms_update() {
 
     /* Retrieve the current state from the global one */
     pState = (menustate*)pGame->pState;
+
+    rv = gameLogo_update(pState->pLogo);
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:

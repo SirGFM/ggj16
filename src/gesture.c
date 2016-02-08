@@ -24,14 +24,6 @@
 #  include <signal.h>
 #endif
 
-enum enMoveState {
-    MOVE_LEFT  = 0x0001,
-    MOVE_RIGHT = 0x0002,
-    MOVE_UP    = 0x0004,
-    MOVE_DOWN  = 0x0008
-};
-typedef enum enMoveState moveState;
-
 struct stGesture {
     /** Last angle */
     double lastAng;
@@ -48,13 +40,15 @@ struct stGesture {
     /** Flag that signals when the struct has been just reset, so it's properly
      * initialized */
     int justReset;
-    /** Allow a few frames (urg) of error when spinning */
+    /** Allow a few miliseconds of error when spinning */
     int angErr;
-    /** Allow a few frames (urg) of error when moving */
+    /** Allow a few miliseconds of error when moving */
     int xErr;
     int yErr;
     /** Check the movement state */
     moveState move;
+    /** Last movement detected */
+    moveState lastMovement;
 };
 
 /**
@@ -188,9 +182,10 @@ gfmRV gesture_update(gesture *pCtx) {
         if (dX != 0) {
             /* Few frames of leeway */
             if ((pCtx->dX >= 0 && dX < 0) || (pCtx->dX <= 0 && dX > 0)) {
-                pCtx->xErr++;
-                if (pCtx->xErr > 3) {
+                pCtx->xErr += pGame->elapsed;
+                if (pCtx->xErr > GESTURE_ERR_TIME) {
                     pCtx->dX = 0;
+                    pCtx->xErr = 0;
                 }
             }
             else {
@@ -201,17 +196,20 @@ gfmRV gesture_update(gesture *pCtx) {
             pCtx->dX += dX;
             if (pCtx->dX > GESTURE_MOVE) {
                 pCtx->move |= MOVE_RIGHT;
+                pCtx->lastMovement = MOVE_RIGHT;
             }
             else if (pCtx->dX < -GESTURE_MOVE) {
                 pCtx->move |= MOVE_LEFT;
+                pCtx->lastMovement = MOVE_LEFT;
             }
         }
         if (dY != 0) {
             /* Few frames of leeway */
             if ((pCtx->dY >= 0 && dY < 0) || (pCtx->dY <= 0 && dY > 0)) {
-                pCtx->yErr++;
-                if (pCtx->yErr > 3) {
+                pCtx->yErr += pGame->elapsed;
+                if (pCtx->yErr > GESTURE_ERR_TIME) {
                     pCtx->dY = 0;
+                    pCtx->yErr = 0;
                 }
             }
             else {
@@ -222,9 +220,11 @@ gfmRV gesture_update(gesture *pCtx) {
             pCtx->dY += dY;
             if (pCtx->dY > GESTURE_MOVE) {
                 pCtx->move |= MOVE_DOWN;
+                pCtx->lastMovement = MOVE_DOWN;
             }
             else if (pCtx->dY < -GESTURE_MOVE) {
                 pCtx->move |= MOVE_UP;
+                pCtx->lastMovement = MOVE_UP;
             }
         }
 
@@ -256,8 +256,8 @@ gfmRV gesture_update(gesture *pCtx) {
         }
         else if (deltaAng != 0.0) {
             /* Mouse on the opposite direction, reset */
-            pCtx->angErr++;
-            if (pCtx->angErr > 3) {
+            pCtx->angErr += pGame->elapsed;
+            if (pCtx->angErr > GESTURE_ERR_TIME) {
                 pCtx->dAng = 0.0;
                 pCtx->angErr = 0;
             }

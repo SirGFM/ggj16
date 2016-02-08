@@ -179,6 +179,8 @@ gfmRV gs_init() {
         ASSERT(rv == GFMRV_OK, rv);
     } while(0);
 
+    gesture_reset(pGlobal->pGesture);
+
     pGame->pState = pState;
     rv = GFMRV_OK;
 __ret:

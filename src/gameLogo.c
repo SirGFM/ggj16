@@ -322,8 +322,13 @@ gfmRV gameLogo_updateTween(gameLogo *pLogo) {
         rv = gfmSprite_setVerticalPosition(pLogo->pMainLogo, LOGO_Y);
         ASSERT(rv == GFMRV_OK, rv);
     }
+
+    /* If it finished tweening, add a small vertical speed (so it will animate
+     * properly) */
     if (dx * dx + dy * dy == 0) {
         pLogo->didFinishTween = 1;
+        rv = gfmSprite_setVerticalVelocity(pLogo->pMainLogo, LOGO_MAX_SPEED);
+        ASSERT(rv == GFMRV_OK, rv);
     }
 
     rv = GFMRV_OK;
@@ -337,7 +342,51 @@ __ret:
  * @param  [ in]pLogo The logo
  * @return            GFraMe return value
  */
-gfmRV gameLogo_update(gameLogo *pLogo);
+gfmRV gameLogo_update(gameLogo *pLogo) {
+    /** Current speed, so it may be clamped */
+    double vy;
+    /** GFraMe return value */
+    gfmRV rv;
+    /** Distance to the desired position */
+    int dy;
+    /** Current position of the logo */
+    int  y;
+
+    /* Check if it should switch directions */
+    rv = gfmSprite_getVerticalPosition(&y, pLogo->pMainLogo);
+    ASSERT(rv == GFMRV_OK, rv);
+    dy = LOGO_Y - y;
+    if (dy > LOGO_MAX_DIST) {
+        rv = gfmSprite_setVerticalAcceleration(pLogo->pMainLogo, LOGO_ACC);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    else if (dy < -LOGO_MAX_DIST) {
+        rv = gfmSprite_setVerticalAcceleration(pLogo->pMainLogo, -LOGO_ACC);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    /* Clamp the logo's velocity */
+    rv = gfmSprite_getVerticalVelocity(&vy, pLogo->pMainLogo);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (vy > LOGO_MAX_SPEED) {
+        rv = gfmSprite_setVerticalVelocity(pLogo->pMainLogo, LOGO_MAX_SPEED);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+    if (vy < -LOGO_MAX_SPEED) {
+        rv = gfmSprite_setVerticalVelocity(pLogo->pMainLogo, -LOGO_MAX_SPEED);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+
+    /* Update the position of the logo */
+    rv = _gameLogo_setShadowPosition(pLogo);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_update(pLogo->pMainLogo, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
 
 /**
  * Render the logo
