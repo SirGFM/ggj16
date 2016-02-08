@@ -101,6 +101,23 @@ void gesture_reset(gesture *pCtx) {
 }
 
 /**
+ * Retrieve the latest gesture, if any. After it's retrieved, it will be cleared
+ * from the gesture context, so it won't trigger again on the next call (unless
+ * it was actually performed)
+ *
+ * @param  [ in]pCtx The recognizer
+ * @return           The performed gesture
+ */
+moveState gesture_getLastestGesture(gesture *pCtx) {
+    moveState tmp;
+
+    tmp = pCtx->lastMovement;
+    pCtx->lastMovement = MOVE_NONE;
+
+    return tmp;
+}
+
+/**
  * Update the recognizer
  *
  * @param  [ in]pCtx The recognizer

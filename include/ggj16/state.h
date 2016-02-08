@@ -12,6 +12,7 @@ enum enState {
     ST_MENU_TWEEN,
     ST_MENU,
     ST_GAME,
+    ST_CREDITS,
     ST_MAX
 };
 

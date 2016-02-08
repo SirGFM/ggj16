@@ -9,6 +9,7 @@
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
+#include <GFraMe/gfmSprite.h>
 #include <GFraMe/gfmText.h>
 
 #include <ggj16/gesture.h>
@@ -21,8 +22,12 @@
 struct stMenustate {
     /** The game's logo */
     gameLogo *pLogo;
+    /** Face icon that takes you to the credits */
+    gfmSprite *pFaceIcon;
     /** Text that displays while loading */
     gfmText *pLoadingTxt;
+    /** Text that renders 'a game by' */
+    gfmText *pGameBy;
     /** Countdown for reseting the loading text */
     int loadingResetTime;
 };
@@ -44,8 +49,10 @@ void ms_free() {
     }
 
     /* Release everything else */
-    gfmText_free(&(pState->pLoadingTxt));
+    gfmSprite_free(&(pState->pFaceIcon));
     gameLogo_free(&(pState->pLogo));
+    gfmText_free(&(pState->pGameBy));
+    gfmText_free(&(pState->pLoadingTxt));
 
     free(pState);
     pGame->pState = 0;
@@ -72,13 +79,33 @@ gfmRV ms_init() {
     /* Initialize the '--LOADING--' text */
     rv = gfmText_getNew(&(pState->pLoadingTxt));
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmText_init(pState->pLoadingTxt, (V_WIDTH - 11 * 8) / 2 /* x */,
-            V_HEIGHT - 16 /* y */, 11 /* maxWidth */, 1 /* maxLines */,
+    rv = gfmText_init(pState->pLoadingTxt, (V_WIDTH - 15 * 8) / 2 /* x */,
+            V_HEIGHT - 48 /* y */, 15 /* maxWidth */, 1 /* maxLines */,
             110 /* delay */, 0 /* bind to screen */, pGfx->pSset8x8,
             0 /* first ASCII tile */);
     ASSERT(rv == GFMRV_OK, rv);
-    rv = gfmText_setTextStatic(pState->pLoadingTxt, "--LOADING--",
+    rv = gfmText_setTextStatic(pState->pLoadingTxt, "  --LOADING--  ",
             1 /* doCopy */);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmText_getNew(&(pState->pGameBy));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_init(pState->pGameBy, (V_WIDTH - 9 * 8) - 32 /* x */,
+            V_HEIGHT - 16 /* y */, 10 /* maxWidth */, 2 /* maxLines */,
+            110 /* delay */, 0 /* bind to screen */, pGfx->pSset8x8,
+            0 /* first ASCII tile */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_setTextStatic(pState->pGameBy, "A GAME BY\n"" @SIRGFM",
+            1 /* doCopy */);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    rv = gfmSprite_getNew(&(pState->pFaceIcon));
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_init(pState->pFaceIcon, V_WIDTH - 32/* x */,
+            V_HEIGHT - 32 /* y */, 32 /* w */, 32 /* h */, pGfx->pSset32x32,
+            0 /* off x */, 0 /* off y */, 0 /* pChild */, 0 /* type */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmSprite_setFrame(pState->pFaceIcon, 63);
     ASSERT(rv == GFMRV_OK, rv);
 
     pState->loadingResetTime = 2000;
@@ -119,7 +146,7 @@ gfmRV ms_introUpdate() {
         else {
             pState->loadingResetTime += 2000;
             /* Restart the loading animation, if it finished */
-            rv = gfmText_setTextStatic(pState->pLoadingTxt, "--LOADING--",
+            rv = gfmText_setTextStatic(pState->pLoadingTxt, "  --LOADING--  ",
                     1 /* doCopy */);
             ASSERT(rv == GFMRV_OK, rv);
         }
@@ -133,7 +160,7 @@ gfmRV ms_introUpdate() {
 
     if (pGame->loadedAssets >= 1) {
         pGame->curState = ST_MENU_TWEEN;
-        rv = gfmText_setTextStatic(pState->pLoadingTxt, "GAME LOADED",
+        rv = gfmText_setTextStatic(pState->pLoadingTxt, "  GAME LOADED  ",
                 1 /* doCopy */);
     }
 
@@ -161,7 +188,9 @@ gfmRV ms_tweenUpdate() {
 
     if (gameLogo_didTweenFinish(pState->pLogo) == GFMRV_TRUE) {
         pGame->curState = ST_MENU;
-        //pGame->nextState = ST_GAME;
+        rv = gfmText_setTextStatic(pState->pLoadingTxt, "TOUCH TO START ",
+                1 /* doCopy */);
+        ASSERT(rv == GFMRV_OK, rv);
     }
 
     rv = GFMRV_OK;
@@ -183,6 +212,34 @@ gfmRV ms_update() {
 
     rv = gameLogo_update(pState->pLogo);
     ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_update(pState->pLoadingTxt, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_update(pState->pGameBy, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+
+    if ((pButton->click.state & gfmInput_justPressed) ==
+            gfmInput_justPressed) {
+        /** Framework's input context */
+        gfmInput *pInput;
+        /** Mouse position, in screen space */
+        int mouseX, mouseY;
+
+        /* Retrieve the current mouse position */
+        rv = gfm_getInput(&pInput, pGame->pCtx);
+        ASSERT(rv == GFMRV_OK, rv);
+        rv = gfmInput_getPointerPosition(&mouseX, &mouseY, pInput);
+        ASSERT(rv == GFMRV_OK, rv);
+        /* Check if should switch to credits */
+        rv = gfmSprite_isPointInside(pState->pFaceIcon, mouseX, mouseY);
+        ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
+        if (rv == GFMRV_TRUE) {
+            pGame->nextState = ST_CREDITS;
+        }
+    }
+    else if ((pButton->click.state & gfmInput_justReleased) ==
+            gfmInput_justReleased) {
+        pGame->nextState = ST_GAME;
+    }
 
     rv = GFMRV_OK;
 __ret:
@@ -203,10 +260,12 @@ gfmRV ms_draw() {
 
     rv = gameLogo_draw(pState->pLogo);
     ASSERT(rv == GFMRV_OK, rv);
-
-    if (pGame->curState != ST_MENU) {
-        /* Only render the 'loading' text if on the first part */
-        rv = gfmText_draw(pState->pLoadingTxt, pGame->pCtx);
+    rv = gfmText_draw(pState->pLoadingTxt, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = gfmText_draw(pState->pGameBy, pGame->pCtx);
+    ASSERT(rv == GFMRV_OK, rv);
+    if (pGame->curState == ST_MENU) {
+        rv = gfmSprite_draw(pState->pFaceIcon, pGame->pCtx);
         ASSERT(rv == GFMRV_OK, rv);
     }
 

@@ -19,6 +19,7 @@ typedef struct stGesture gesture;
 #include <ggj16/type.h>
 
 enum enMoveState {
+    MOVE_NONE  = 0x0000,
     MOVE_LEFT  = 0x0001,
     MOVE_RIGHT = 0x0002,
     MOVE_UP    = 0x0004,
@@ -46,6 +47,16 @@ gfmRV gesture_getNew(gesture **ppCtx);
  * @param  [ in]pCtx The recognizer
  */
 void gesture_reset(gesture *pCtx);
+
+/**
+ * Retrieve the latest gesture, if any. After it's retrieved, it will be cleared
+ * from the gesture context, so it won't trigger again on the next call (unless
+ * it was actually performed)
+ *
+ * @param  [ in]pCtx The recognizer
+ * @return           The performed gesture
+ */
+moveState gesture_getLastestGesture(gesture *pCtx);
 
 /**
  * Update the recognizer
