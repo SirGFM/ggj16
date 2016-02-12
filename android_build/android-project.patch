@@ -1,6 +1,6 @@
 diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifest.xml
---- android-project/AndroidManifest.xml	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/AndroidManifest.xml	2016-02-04 21:27:49.547682100 -0200
+--- android-project/AndroidManifest.xml	2016-02-12 21:33:11.882211400 -0200
++++ android-project-new/AndroidManifest.xml	2016-02-12 21:33:13.501888000 -0200
 @@ -1,31 +1,21 @@
  <?xml version="1.0" encoding="utf-8"?>
 -<!-- Replace org.libsdl.app with the identifier of your game below, e.g.
@@ -50,8 +50,8 @@ diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifes
      <!-- OpenGL ES 2.0 -->
      <uses-feature android:glEsVersion="0x00020000" /> 
 diff -ruN android-project/default.properties android-project-new/default.properties
---- android-project/default.properties	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/default.properties	2016-02-04 21:27:49.548252100 -0200
+--- android-project/default.properties	2016-02-12 21:33:11.883345600 -0200
++++ android-project-new/default.properties	2016-02-12 21:33:13.502420000 -0200
 @@ -8,4 +8,4 @@
  # project structure.
  
@@ -59,9 +59,9 @@ diff -ruN android-project/default.properties android-project-new/default.propert
 -target=android-12
 +target=android-10
 diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android.mk
---- android-project/jni/src/Android.mk	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/jni/src/Android.mk	2016-02-04 21:28:05.760013100 -0200
-@@ -4,16 +4,29 @@
+--- android-project/jni/src/Android.mk	2016-02-12 21:33:12.289470700 -0200
++++ android-project-new/jni/src/Android.mk	2016-02-12 21:33:37.132397500 -0200
+@@ -4,16 +4,32 @@
  
  LOCAL_MODULE := main
  
@@ -78,11 +78,14 @@ diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android
 +        $(LOCAL_PATH)/../../../../src/cauldron.c \
 +        $(LOCAL_PATH)/../../../../src/collision.c \
 +        $(LOCAL_PATH)/../../../../src/config.c \
++        $(LOCAL_PATH)/../../../../src/gameLogo.c \
 +        $(LOCAL_PATH)/../../../../src/gamestate.c \
 +        $(LOCAL_PATH)/../../../../src/gesture.c \
 +        $(LOCAL_PATH)/../../../../src/global.c \
 +        $(LOCAL_PATH)/../../../../src/input.c \
++        $(LOCAL_PATH)/../../../../src/levelLoader.c \
 +        $(LOCAL_PATH)/../../../../src/main.c \
++        $(LOCAL_PATH)/../../../../src/menustate.c \
 +        $(LOCAL_PATH)/../../../../src/object.c \
 +        $(LOCAL_PATH)/../../../../src/recipeScroll.c \
 +        $(LOCAL_PATH)/../../../../src/scrollItem.c \
@@ -96,8 +99,8 @@ diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android
  
  include $(BUILD_SHARED_LIBRARY)
 diff -ruN android-project/project.properties android-project-new/project.properties
---- android-project/project.properties	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/project.properties	2016-02-04 21:27:49.549292200 -0200
+--- android-project/project.properties	2016-02-12 21:33:12.290383500 -0200
++++ android-project-new/project.properties	2016-02-12 21:33:13.503432700 -0200
 @@ -11,4 +11,4 @@
  #proguard.config=${sdk.dir}/tools/proguard/proguard-android.txt:proguard-project.txt
  
@@ -105,8 +108,8 @@ diff -ruN android-project/project.properties android-project-new/project.propert
 -target=android-12
 +target=android-10
 diff -ruN android-project/res/values/strings.xml android-project-new/res/values/strings.xml
---- android-project/res/values/strings.xml	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/res/values/strings.xml	2016-02-04 21:27:49.549969400 -0200
+--- android-project/res/values/strings.xml	2016-02-12 21:33:12.293640900 -0200
++++ android-project-new/res/values/strings.xml	2016-02-12 21:33:13.504061300 -0200
 @@ -1,4 +1,4 @@
  <?xml version="1.0" encoding="utf-8"?>
  <resources>
@@ -114,8 +117,8 @@ diff -ruN android-project/res/values/strings.xml android-project-new/res/values/
 +    <string name="app_name">Witch\'s Spell</string>
  </resources>
 diff -ruN android-project/src/org/libsdl/app/SDLActivity.java android-project-new/src/org/libsdl/app/SDLActivity.java
---- android-project/src/org/libsdl/app/SDLActivity.java	2014-03-15 23:31:45.000000000 -0300
-+++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-04 21:27:49.551296400 -0200
+--- android-project/src/org/libsdl/app/SDLActivity.java	2016-02-12 21:33:12.294922000 -0200
++++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-12 21:33:13.505254900 -0200
 @@ -47,6 +47,8 @@
      // Load the .so
      static {

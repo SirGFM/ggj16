@@ -253,6 +253,11 @@ gfmRV gs_update() {
     ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
     if (rv == GFMRV_TRUE) {
         cauldron_doExplode(pGlobal->pCauldron);
+
+        if ((pButton->click.state & gfmInput_justReleased) ==
+                gfmInput_justReleased) {
+            pGame->nextState = ST_MENU;
+        }
     }
 
     rv = GFMRV_OK;

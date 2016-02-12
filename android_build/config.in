@@ -3,6 +3,12 @@
 # File with configurable parts for main script
 #===============================================================================
 
+# Project's name
+PROJECT_NAME=Witchs_Spell
+
+# Minimum android version (by API, where API 10 == Android 2.3.3)
+ANDROID_VERSION=android-10
+
 # SDL2 2.0.3's package
 SDL2_2_0_3_pkg=/home/gfm/Downloads/SDL2-2.0.3.tar.gz
 

@@ -7,12 +7,12 @@
           $(OBJDIR)/cauldron.o     \
           $(OBJDIR)/collision.o    \
           $(OBJDIR)/config.o       \
-          $(OBJDIR)/gesture.o      \
           $(OBJDIR)/gameLogo.o     \
           $(OBJDIR)/gamestate.o    \
-          $(OBJDIR)/levelLoader.o  \
+          $(OBJDIR)/gesture.o      \
           $(OBJDIR)/global.o       \
           $(OBJDIR)/input.o        \
+          $(OBJDIR)/levelLoader.o  \
           $(OBJDIR)/main.o         \
           $(OBJDIR)/menustate.o    \
           $(OBJDIR)/object.o       \

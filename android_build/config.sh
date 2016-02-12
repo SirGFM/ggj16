@@ -75,6 +75,7 @@ cd android-project/assets/
 cp -r ../../../assets/gfx/ .
 cp -r ../../../assets/map/ .
 cp -r ../../../assets/mml/ .
+cp -r ../../../assets/levels/ .
 cd -
 
 # Create a symlink to the SDL2 includes
@@ -138,10 +139,24 @@ if [ -z "${KEY_ALIAS}" ]; then
     read KEY_ALIAS
 fi
 
-if [ -z "${KEY_STORE}" ]; then
+if [ ! -z "${KEY_STORE}" ]; then
     echo "key.store=${KEY_STORE}" > android-project/ant.properties
 fi
-if [ -z "${KEY_ALIAS}" ]; then
+if [ ! -z "${KEY_ALIAS}" ]; then
     echo "key.alias=${KEY_ALIS}" > android-project/ant.properties
 fi
+
+if [ -z "${PROJECT_NAME}" ]; then
+    echo -n "Insert the project's name (no spaces nor special characters): "
+    read PROJECT_NAME
+fi
+
+if [ -z "${ANDROID_VERSION}" ]; then
+    echo -n "Insert the minimum android version required (e.g., android-10): "
+    read ANDROID_VERSION
+fi
+
+cd android-project/
+android update project -n ${PROJECT_NAME} -p . -t "${ANDROID_VERSION}"
+cd -
 
