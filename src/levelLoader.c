@@ -150,7 +150,6 @@ static gfmRV levelLoader_parseTemplate(recipeTemplate *pTemplate,
     int len;
 
     pParser = 0;
-    pString = 0;
 
     /* Prepend 'level/' to the file path */
     rv = gfmString_initStatic(pString, "levels/", 1);
@@ -197,7 +196,7 @@ static gfmRV levelLoader_parseTemplate(recipeTemplate *pTemplate,
 
             /* Retrieve the difficulty as an integer */
             diff = 0;
-            while (diff < RD_MAXDIFF && strcmp(pValue, diffDict[diff]) == 0) {
+            while (diff < RD_MAXDIFF && strcmp(pValue, diffDict[diff]) != 0) {
                 diff++;
             }
             ASSERT(diff > RD_NONE, GFMRV_PARSER_BAD_TOKEN);
@@ -243,6 +242,8 @@ static gfmRV levelLoader_parseTemplate(recipeTemplate *pTemplate,
 
     /* Store the template's path */
     pTemplate->pPath = (char*)malloc(sizeof(char) * (strlen(pFilename) + 1));
+    ASSERT(pTemplate->pPath, GFMRV_ALLOC_FAILED);
+    memcpy(pTemplate->pPath, pFilename, strlen(pFilename) + 1);
 
     rv = GFMRV_OK;
 __ret:
@@ -426,6 +427,8 @@ gfmRV levelLoader_generateLevel(itemType **ppData, int *pLen, int level) {
     /** Maximum number of levels */
     int max;
 
+    pParser = 0;
+
     /* Load the levels list and the desired level */
     rv = gfmParser_getNew(&pParser);
     ASSERT(rv == GFMRV_OK, rv);
@@ -507,7 +510,7 @@ gfmRV levelLoader_generateLevel(itemType **ppData, int *pLen, int level) {
 
             /* Retrieve the difficulty as an integer */
             diff = 0;
-            while (diff < RD_MAXDIFF && strcmp(pVal, diffDict[diff]) == 0) {
+            while (diff < RD_MAXDIFF && strcmp(pVal, diffDict[diff]) != 0) {
                 diff++;
             }
             ASSERT(diff > RD_NONE, GFMRV_PARSER_BAD_TOKEN);

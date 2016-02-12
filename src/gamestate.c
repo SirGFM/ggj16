@@ -17,6 +17,7 @@
 #include <ggj16/cauldron.h>
 #include <ggj16/gesture.h>
 #include <ggj16/gamestate.h>
+#include <ggj16/levelLoader.h>
 #include <ggj16/object.h>
 #include <ggj16/type.h>
 
@@ -68,6 +69,10 @@ gfmRV gs_init() {
     gfmRV rv;
     /** The new state */
     gamestate *pState;
+    /** Level's input */
+    itemType *pData;
+    /** Length of the level */
+    int len;
 
     pParser = 0;
     pState = 0;
@@ -158,26 +163,12 @@ gfmRV gs_init() {
     /* Initialize the recipe */
     rv = recipeScroll_getNew(&(pGlobal->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
-    /* TODO Load level from generator */
-    do {
-        itemType pData[] = {
-            T_RAT_TAIL,
-            T_BAT_WING,
-            T_EYE,
-            T_WEB,
-            T_PHOENIX_FEATHER,
-            T_SKULL,
-            T_BONE,
-            T_MUSHROOM,
-            T_ROTATE_CW,
-            T_ROTATE_CCW,
-            T_MOVE_VERTICAL,
-            T_MOVE_HORIZONTAL
-        };
 
-        rv = recipeScroll_load(pGlobal->pRecipe, pData, sizeof(pData) / sizeof(int), -8);
-        ASSERT(rv == GFMRV_OK, rv);
-    } while(0);
+    /* Load level from generator */
+    rv = levelLoader_generateLevel(&pData, &len, 0 /* level */);
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = recipeScroll_load(pGlobal->pRecipe, pData, len, -8);
+    ASSERT(rv == GFMRV_OK, rv);
 
     gesture_reset(pGlobal->pGesture);
 
