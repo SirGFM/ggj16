@@ -8,6 +8,11 @@
 
 #include <GFraMe/gfmError.h>
 
+#define FIRST_INGREDIENT    T_RAT_TAIL
+#define FIRST_ACTION        T_ROTATE_CW
+#define NUM_INGREDIENT      (T_WAIT - T_RAT_TAIL)
+#define NUM_ACTION          (T_CAULDRON - T_ROTATE_CW)
+
 enum enItemType {
     T_RAT_TAIL = 0,
     T_BAT_WING,
@@ -17,13 +22,15 @@ enum enItemType {
     T_SKULL,
     T_BONE,
     T_MUSHROOM,
+    T_WAIT, /* Doesn't work, do not use */
     T_ROTATE_CW,
     T_ROTATE_CCW,
-    T_WAIT, /* Doesn't work, do not use */
     T_MOVE_VERTICAL,
     T_MOVE_HORIZONTAL,
     T_CAULDRON,
     T_MAX,
+    T_RANDOM_INGREDIENT,
+    T_RANDOM_ACTION,
     T_NONE
 };
 typedef enum enItemType itemType;

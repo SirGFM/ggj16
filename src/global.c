@@ -63,6 +63,8 @@ gfmRV global_initUserVar() {
     /* Initialize everything */
     rv = gesture_getNew(&(pGlobal->pGesture));
     ASSERT(rv == GFMRV_OK, rv);
+    rv = levelLoader_init();
+    ASSERT(rv == GFMRV_OK, rv);
 
     rv = GFMRV_OK;
 __ret:
@@ -79,5 +81,6 @@ void global_freeUserVar() {
 
     gfmQuadtree_free(&(pGlobal->pQt));
     gesture_free(&(pGlobal->pGesture));
+    levelLoader_free();
 }
 

@@ -14,6 +14,7 @@
 
 #include <ggj16/cauldron.h>
 #include <ggj16/gesture.h>
+#include <ggj16/levelLoader.h>
 #include <ggj16/object.h>
 #include <ggj16/recipeScroll.h>
 #include <ggj16/state.h>
@@ -205,6 +206,8 @@ struct stGlobalCtx {
     gfmQuadtreeRoot *pQt;
     /** Gesture recognizer */
     gesture *pGesture;
+    /** The level loader */
+    levelLoader *pLevelLoader;
     /** Current object being dragger */
     object *pDragging;
     /** Current recipe */

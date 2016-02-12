@@ -10,6 +10,7 @@
           $(OBJDIR)/gesture.o      \
           $(OBJDIR)/gameLogo.o     \
           $(OBJDIR)/gamestate.o    \
+          $(OBJDIR)/levelLoader.o  \
           $(OBJDIR)/global.o       \
           $(OBJDIR)/input.o        \
           $(OBJDIR)/main.o         \

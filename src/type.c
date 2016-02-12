@@ -19,12 +19,12 @@ static char *pTypeStr[T_MAX] = {
     "skull",
     "bone",
     "mushroom",
+    "wait",
     "rotate_cw",
     "rotate_ccw",
-    "wait",
     "move_horizontal",
     "move_vertical",
-    "cauldron"
+    "cauldron",
 };
 
 /**

@@ -108,5 +108,8 @@
 /** Time (in miliseconds) during which gesture errors are ignored */
 #define GESTURE_ERR_TIME    66
 
+#define LEVELLOADER_TEMPLATE_FILE   "levels/tmpl_list.gfm"
+#define LEVELLOADER_LEVELS_FILE     "levels/level_list.gfm"
+
 #endif /* __GAME_CONST_H__ */
 
