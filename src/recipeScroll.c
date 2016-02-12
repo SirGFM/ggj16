@@ -24,6 +24,8 @@
 struct stRecipeScroll {
     /** Sprites (used in a round-robin fashion) for the "recipe map" */
     scrollItem *ppItems[MAX_SCROLL_SPR];
+    /** Current highlighted sprite */
+    scrollItem *pCurScrollItem;
     /** List of items on the current recipe */
     itemType *pRecipe;
     /** Recipe's vertical speed */
@@ -99,8 +101,6 @@ gfmRV recipeScroll_getNew(recipeScroll **ppScroll) {
         i++;
     }
 
-    /** TODO Alloc the maximum number of objects on a recipe? */
-
     pScroll->recipeSpeed = 4;
 
     *ppScroll = pScroll;
@@ -138,7 +138,7 @@ static gfmRV _recipeScroll_loadNextItem(recipeScroll *pScroll,
     i = 0;
     y = 0;
     while (i < pScroll->numItems && i < MAX_SCROLL_SPR) {
-        if (pScroll->ppItems[i]->status != ITEM_RECYCLE &&
+        if ((pScroll->ppItems[i]->status & ITEM_RECYCLE) != ITEM_RECYCLE &&
                 pScroll->ppItems[i]->y > y) {
             y = pScroll->ppItems[i]->y;
         }
@@ -226,6 +226,8 @@ __ret:
  */
 gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item) {
     if (pScroll->done == 0 && item == pScroll->expected) {
+        /* Stop highlighting the current item */
+        scrollItem_resetHighlight(pScroll->pCurScrollItem);
         pScroll->done = 1;
         return GFMRV_TRUE;
     }
@@ -269,7 +271,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
 
 #define curStatus (pScroll->ppItems[i]->status)
 
-        if (curStatus == ITEM_RECYCLE) {
+        if ((curStatus & ITEM_RECYCLE) == ITEM_RECYCLE) {
             /* The item just went invisible, it may be recycled */
             rv = _recipeScroll_loadNextItem(pScroll, pScroll->ppItems[i]);
             ASSERT(rv == GFMRV_OK, rv);
@@ -277,6 +279,7 @@ gfmRV recipeScroll_update(recipeScroll *pScroll) {
         else if ((curStatus & ITEM_JUST_ENTERED) == ITEM_JUST_ENTERED) {
             /* The item just entered the area, set it as the expected */
             gesture_reset(pGlobal->pGesture);
+            pScroll->pCurScrollItem = pScroll->ppItems[i];
             pScroll->expected  = pScroll->ppItems[i]->type;
             pScroll->done = 0;
         }

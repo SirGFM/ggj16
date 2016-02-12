@@ -1,5 +1,8 @@
 attr
 [ difficulty , easy ]
+[ action , rotate_cw ]
+[ action , wait ]
+[ action , rotate_ccw ]
 [ ingredient , rat_tail ]
 [ ingredient , random ]
 [ action , random ]

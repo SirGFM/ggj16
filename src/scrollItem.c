@@ -97,6 +97,30 @@ __ret:
 }
 
 /**
+ * Resets the item highlight (e.g., after being correctly executed)
+ *
+ * @param  [ in]pItem The item
+ * @return            GFraMe return value
+ */
+gfmRV scrollItem_resetHighlight(scrollItem *pItem) {
+    /** GFraMe return value */
+    gfmRV rv;
+    /** Sprite's new tile */
+    int tile;
+
+    /* Remove the highlight (i.e., set the default tile) */
+    tile = pItem->type * 2 + FIRST_ITEM_TILE;
+    rv = gfmSprite_setFrame(pItem->pSelf, tile);
+    ASSERT(rv == GFMRV_OK, rv);
+    /* Set its status so it won't be highlighted again */
+    pItem->status = ITEM_DONE;
+
+    rv = GFMRV_OK;
+__ret:
+    return rv;
+}
+
+/**
  * Update the current item
  *
  * @param  [ in]pItem The item
@@ -122,7 +146,8 @@ gfmRV scrollItem_update(scrollItem *pItem) {
 
     /* Check whether it's inside the area */
     if (pItem->y - SCROLL_AREA_POS > -2 &&
-            pItem->y - SCROLL_AREA_POS + 2 <= SCROLL_AREA_HEIGHT) {
+            pItem->y - SCROLL_AREA_POS + 2 <= SCROLL_AREA_HEIGHT &&
+            !(pItem->status & ITEM_DONE)) {
         tile |= 1;
         if (!(pItem->status & ITEM_INSIDE)) {
             /* If the item wasn't inside the area, flag it as having just

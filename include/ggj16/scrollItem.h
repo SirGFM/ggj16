@@ -16,8 +16,10 @@ enum enScrollItemStatus {
     ITEM_INSIDE       = 0x0001,
     /** Bit that flag that it has just entered/left the area */
     ITEM_JUST         = 0x0010,
-    /** Flag that the itme may be recycled */
+    /** Flag that the item may be recycled */
     ITEM_RECYCLE      = 0x0100,
+    /** Flag that the item was correctly executed */
+    ITEM_DONE         = 0x0200,
 
     /** Helper flags */
     ITEM_JUST_LEFT    = ITEM_JUST,
@@ -73,6 +75,14 @@ gfmRV scrollItem_init(scrollItem *pItem, double vy, itemType type, int x,
  * @return            GFraMe return value
  */
 gfmRV scrollItem_update(scrollItem *pItem);
+
+/**
+ * Resets the item highlight (e.g., after being correctly executed)
+ *
+ * @param  [ in]pItem The item
+ * @return            GFraMe return value
+ */
+gfmRV scrollItem_resetHighlight(scrollItem *pItem);
 
 /**
  * Draw the current item
