@@ -150,6 +150,10 @@ struct stGfxCtx {
 /** Store all handles to songs and sound effects */
 struct stAudioCtx {
     int song;
+    int sfx_onEnterItem;
+    int sfx_onWrongItem;
+    int sfx_onSwipeIn;
+    int sfx_onSwipeOut;
 };
 
 /** Simple button definition, so it's easier to update and access each button */
@@ -200,6 +204,8 @@ struct stConfigCtx {
 
 /** Store game-related variables that should be globally accessible */
 struct stGlobalCtx {
+    /** Currently playing audio */
+    gfmAudioHandle *pSong;
     /** The cauldron */
     cauldron *pCauldron;
     /** The quadtree for collision */
@@ -214,6 +220,8 @@ struct stGlobalCtx {
     recipeScroll *pRecipe;
     /** Whether an object is being dragged */
     int isDragging;
+    /** Whether the previous swipe sfx was in or out */
+    int sfx_lastSwipeWasIn;
 };
 
 #endif /* __GAME_CTX_H__ */

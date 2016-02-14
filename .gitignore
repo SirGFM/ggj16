@@ -38,6 +38,7 @@ bin/*
 # Binary assets
 *.xcf
 *.png
+*.wav
 
 # Android project
 android_build/android-project/

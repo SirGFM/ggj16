@@ -11,6 +11,7 @@
 #include <GFraMe/gfmInput.h>
 
 #include <ggj16/gesture.h>
+#include <ggj16/sounds.h>
 #include <ggj16/type.h>
 
 #include <math.h>
@@ -212,12 +213,21 @@ gfmRV gesture_update(gesture *pCtx) {
             /* Update movement */
             pCtx->dX += dX;
             if (pCtx->dX > GESTURE_MOVE) {
+                if (dX > GESTURE_MOVE / 2 &&
+                        !(pCtx->lastMovement & MOVE_RIGHT)) {
+                    rv = sound_playSwipe();
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
                 pCtx->move |= MOVE_RIGHT;
                 pCtx->lastMovement = MOVE_RIGHT;
             }
             else if (pCtx->dX < -GESTURE_MOVE) {
-                pCtx->move |= MOVE_LEFT;
-                pCtx->lastMovement = MOVE_LEFT;
+                if (dX < -GESTURE_MOVE / 2 &&
+                        !(pCtx->lastMovement & MOVE_LEFT)) {
+                    rv = sound_playSwipe();
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
+                pCtx->move |= MOVE_LEFT; pCtx->lastMovement = MOVE_LEFT;
             }
         }
         if (dY != 0) {
@@ -233,13 +243,23 @@ gfmRV gesture_update(gesture *pCtx) {
                 pCtx->yErr = 0;
             }
 
-            /* Update movemente */
+            /* Update movement */
             pCtx->dY += dY;
             if (pCtx->dY > GESTURE_MOVE) {
+                if (dY > GESTURE_MOVE / 2 &&
+                        !(pCtx->lastMovement & MOVE_DOWN)) {
+                    rv = sound_playSwipe();
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
                 pCtx->move |= MOVE_DOWN;
                 pCtx->lastMovement = MOVE_DOWN;
             }
             else if (pCtx->dY < -GESTURE_MOVE) {
+                if (dY < -GESTURE_MOVE / 2 &&
+                        !(pCtx->lastMovement & MOVE_UP)) {
+                    rv = sound_playSwipe();
+                    ASSERT(rv == GFMRV_OK, rv);
+                }
                 pCtx->move |= MOVE_UP;
                 pCtx->lastMovement = MOVE_UP;
             }

@@ -164,6 +164,13 @@ gfmRV gs_init() {
     rv = recipeScroll_getNew(&(pGlobal->pRecipe));
     ASSERT(rv == GFMRV_OK, rv);
 
+#if !defined(DEBUG)
+    if (!pGlobal->pSong) {
+        rv = gfm_playAudio(&(pGlobal->pSong), pGame->pCtx, pAudio->song, 1.0);
+        ASSERT(rv == GFMRV_OK, rv);
+    }
+#endif
+
     /* Load level from generator */
     rv = levelLoader_generateLevel(&pData, &len, 0 /* level */);
     ASSERT(rv == GFMRV_OK, rv);

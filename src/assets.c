@@ -10,15 +10,29 @@
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
 
-enum {
+enum enBgAudioHandles {
+    SFX_ON_ENTER_HND = 0,
+    SFX_ON_WRONG_HND,
+    SFX_ON_SWIPE_IN_HND,
+    SFX_ON_SWIPE_OUT_HND,
     SONG_HND,
-    MAX_HND
+    MAX_HND,
+    FIRST_HND = 0
 };
+typedef enum enBgAudioHandles bgAudioHandles;
 
 static gfmAssetType pType[MAX_HND] = {
+    ASSET_AUDIO,
+    ASSET_AUDIO,
+    ASSET_AUDIO,
+    ASSET_AUDIO,
     ASSET_AUDIO
 };
 static char *ppPath[MAX_HND] = {
+    "sfx/onEnterItem.wav",
+    "sfx/onWrongItem.wav",
+    "sfx/onSwipeIn.wav",
+    "sfx/onSwipeOut.wav",
     "mml/song.mml"
 };
 static const int numAssets = MAX_HND;
@@ -32,6 +46,8 @@ static int *ppHandles[MAX_HND];
 gfmRV assets_load() {
     /** Return value */
     gfmRV rv;
+    /** Iterate through all audio handles to set 'em before loading */
+    bgAudioHandles i;
 
     /* Macros for loading stuff... */
 #define GEN_SPRITESET(W, H, TEX) \
@@ -58,7 +74,31 @@ gfmRV assets_load() {
     GEN_SPRITESET(256, 128, pGfx->texHandle);
 
     /* Retrieve the audio's handle, so it can be passed to the loader thread */
-    ppHandles[0] = &(pAudio->song);
+    i = FIRST_HND;
+    while (i < MAX_HND) {
+        switch (i) {
+            case SFX_ON_ENTER_HND: {
+                ppHandles[i] = &(pAudio->sfx_onEnterItem);
+            } break;
+            case SFX_ON_WRONG_HND: {
+                ppHandles[i] = &(pAudio->sfx_onWrongItem);
+            } break;
+            case SFX_ON_SWIPE_IN_HND: {
+                ppHandles[i] = &(pAudio->sfx_onSwipeIn);
+            } break;
+            case SFX_ON_SWIPE_OUT_HND: {
+                ppHandles[i] = &(pAudio->sfx_onSwipeOut);
+            } break;
+            case SONG_HND: {
+                ppHandles[i] = &(pAudio->song);
+            } break;
+            default: {
+                /** Shouldn't happen */
+                ASSERT(0, GFMRV_INTERNAL_ERROR);
+            }
+        }
+        i++;
+    }
 
     rv = gfm_loadAssetsAsync(&(pGame->loadedAssets), pGame->pCtx, pType, ppPath,
             ppHandles, (int)numAssets);

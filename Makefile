@@ -18,6 +18,7 @@
           $(OBJDIR)/object.o       \
           $(OBJDIR)/recipeScroll.o \
           $(OBJDIR)/scrollItem.o   \
+          $(OBJDIR)/sounds.o       \
           $(OBJDIR)/type.o
 #=======================================================================
 

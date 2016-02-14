@@ -12,6 +12,7 @@
 
 #include <ggj16/type.h>
 #include <ggj16/scrollItem.h>
+#include <ggj16/sounds.h>
 
 #include <stdlib.h>
 #include <string.h>
@@ -153,6 +154,8 @@ gfmRV scrollItem_update(scrollItem *pItem) {
             /* If the item wasn't inside the area, flag it as having just
              * entered */
             pItem->status |= ITEM_JUST;
+            rv = sound_playEnterItem();
+            ASSERT(rv == GFMRV_OK, rv);
         }
         /* Set it as being inside the area */
         pItem->status |= ITEM_INSIDE;

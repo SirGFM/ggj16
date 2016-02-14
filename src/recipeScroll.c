@@ -15,8 +15,8 @@
 #include <ggj16/gesture.h>
 #include <ggj16/recipeScroll.h>
 #include <ggj16/scrollItem.h>
+#include <ggj16/sounds.h>
 #include <ggj16/type.h>
-
 
 #include <stdlib.h>
 #include <string.h>
@@ -234,6 +234,7 @@ gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item) {
     else {
         /* Set error FLAG */
         pScroll->error = GFMRV_TRUE;
+        sound_onWrongItem();
         return GFMRV_FALSE;
     }
 }
