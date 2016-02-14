@@ -3,23 +3,13 @@
  *
  * Handles loading assets and creating the required spritesets
  */
+#include <base/assets.h>
 #include <base/game_const.h>
 #include <base/game_ctx.h>
 
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
 #include <GFraMe/gframe.h>
-
-enum enBgAudioHandles {
-    SFX_ON_ENTER_HND = 0,
-    SFX_ON_WRONG_HND,
-    SFX_ON_SWIPE_IN_HND,
-    SFX_ON_SWIPE_OUT_HND,
-    SONG_HND,
-    MAX_HND,
-    FIRST_HND = 0
-};
-typedef enum enBgAudioHandles bgAudioHandles;
 
 static gfmAssetType pType[MAX_HND] = {
     ASSET_AUDIO,

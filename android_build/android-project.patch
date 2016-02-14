@@ -1,6 +1,6 @@
 diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifest.xml
---- android-project/AndroidManifest.xml	2016-02-12 21:33:11.882211400 -0200
-+++ android-project-new/AndroidManifest.xml	2016-02-12 21:33:13.501888000 -0200
+--- android-project/AndroidManifest.xml	2016-02-14 14:00:14.194322300 -0200
++++ android-project-new/AndroidManifest.xml	2016-02-14 14:00:18.072601000 -0200
 @@ -1,31 +1,21 @@
  <?xml version="1.0" encoding="utf-8"?>
 -<!-- Replace org.libsdl.app with the identifier of your game below, e.g.
@@ -50,8 +50,8 @@ diff -ruN android-project/AndroidManifest.xml android-project-new/AndroidManifes
      <!-- OpenGL ES 2.0 -->
      <uses-feature android:glEsVersion="0x00020000" /> 
 diff -ruN android-project/default.properties android-project-new/default.properties
---- android-project/default.properties	2016-02-12 21:33:11.883345600 -0200
-+++ android-project-new/default.properties	2016-02-12 21:33:13.502420000 -0200
+--- android-project/default.properties	2016-02-14 14:00:14.195419300 -0200
++++ android-project-new/default.properties	2016-02-14 14:00:18.073102600 -0200
 @@ -8,4 +8,4 @@
  # project structure.
  
@@ -59,9 +59,9 @@ diff -ruN android-project/default.properties android-project-new/default.propert
 -target=android-12
 +target=android-10
 diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android.mk
---- android-project/jni/src/Android.mk	2016-02-12 21:33:12.289470700 -0200
-+++ android-project-new/jni/src/Android.mk	2016-02-12 21:33:37.132397500 -0200
-@@ -4,16 +4,32 @@
+--- android-project/jni/src/Android.mk	2016-02-14 14:00:14.517239500 -0200
++++ android-project-new/jni/src/Android.mk	2016-02-14 14:00:43.173615300 -0200
+@@ -4,16 +4,33 @@
  
  LOCAL_MODULE := main
  
@@ -89,6 +89,7 @@ diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android
 +        $(LOCAL_PATH)/../../../../src/object.c \
 +        $(LOCAL_PATH)/../../../../src/recipeScroll.c \
 +        $(LOCAL_PATH)/../../../../src/scrollItem.c \
++        $(LOCAL_PATH)/../../../../src/sounds.c \
 +        $(LOCAL_PATH)/../../../../src/type.c
  
 -LOCAL_SHARED_LIBRARIES := SDL2
@@ -99,8 +100,8 @@ diff -ruN android-project/jni/src/Android.mk android-project-new/jni/src/Android
  
  include $(BUILD_SHARED_LIBRARY)
 diff -ruN android-project/project.properties android-project-new/project.properties
---- android-project/project.properties	2016-02-12 21:33:12.290383500 -0200
-+++ android-project-new/project.properties	2016-02-12 21:33:13.503432700 -0200
+--- android-project/project.properties	2016-02-14 14:00:14.518015000 -0200
++++ android-project-new/project.properties	2016-02-14 14:00:18.074148600 -0200
 @@ -11,4 +11,4 @@
  #proguard.config=${sdk.dir}/tools/proguard/proguard-android.txt:proguard-project.txt
  
@@ -108,8 +109,8 @@ diff -ruN android-project/project.properties android-project-new/project.propert
 -target=android-12
 +target=android-10
 diff -ruN android-project/res/values/strings.xml android-project-new/res/values/strings.xml
---- android-project/res/values/strings.xml	2016-02-12 21:33:12.293640900 -0200
-+++ android-project-new/res/values/strings.xml	2016-02-12 21:33:13.504061300 -0200
+--- android-project/res/values/strings.xml	2016-02-14 14:00:14.520791400 -0200
++++ android-project-new/res/values/strings.xml	2016-02-14 14:00:18.074783400 -0200
 @@ -1,4 +1,4 @@
  <?xml version="1.0" encoding="utf-8"?>
  <resources>
@@ -117,8 +118,8 @@ diff -ruN android-project/res/values/strings.xml android-project-new/res/values/
 +    <string name="app_name">Witch\'s Spell</string>
  </resources>
 diff -ruN android-project/src/org/libsdl/app/SDLActivity.java android-project-new/src/org/libsdl/app/SDLActivity.java
---- android-project/src/org/libsdl/app/SDLActivity.java	2016-02-12 21:33:12.294922000 -0200
-+++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-12 21:33:13.505254900 -0200
+--- android-project/src/org/libsdl/app/SDLActivity.java	2016-02-14 14:00:14.522046100 -0200
++++ android-project-new/src/org/libsdl/app/SDLActivity.java	2016-02-14 14:00:18.075955500 -0200
 @@ -47,6 +47,8 @@
      // Load the .so
      static {

@@ -166,7 +166,7 @@ __ret:
  * @param  [out]pVar   The 'variable' component. It's value is returned in
  *                     absolute, so it may be later be inverted
  */
-static void _gameLog_getNewVelocity(double *pConst, double *pVar) {
+static void _gameLogo_getNewVelocity(double *pConst, double *pVar) {
     /** Current signal */
     int signal;
 
@@ -209,7 +209,7 @@ gfmRV gameLogo_updateIntro(gameLogo *pLogo) {
         ASSERT(rv == GFMRV_OK, rv);
 
         /* Calculate and set a new random velocity */
-        _gameLog_getNewVelocity(&vy, &vx);
+        _gameLogo_getNewVelocity(&vy, &vx);
         rv = gfmSprite_setVelocity(pLogo->pMainLogo, vx, vy);
         ASSERT(rv == GFMRV_OK, rv);
     }
@@ -222,7 +222,7 @@ gfmRV gameLogo_updateIntro(gameLogo *pLogo) {
         ASSERT(rv == GFMRV_OK, rv);
 
         /* Calculate and set a new random velocity */
-        _gameLog_getNewVelocity(&vy, &vx);
+        _gameLogo_getNewVelocity(&vy, &vx);
         rv = gfmSprite_setVelocity(pLogo->pMainLogo, -vx, vy);
         ASSERT(rv == GFMRV_OK, rv);
     }
@@ -231,11 +231,11 @@ gfmRV gameLogo_updateIntro(gameLogo *pLogo) {
         double vx, vy;
 
         /* Get the horizontal speed to maintain the direction */
-        rv = gfmSprite_getHorizontalVelocity(&vy, pLogo->pMainLogo);
+        rv = gfmSprite_getHorizontalVelocity(&vx, pLogo->pMainLogo);
         ASSERT(rv == GFMRV_OK, rv);
 
         /* Calculate and set a new random velocity */
-        _gameLog_getNewVelocity(&vx, &vy);
+        _gameLogo_getNewVelocity(&vx, &vy);
         /* Set its speed pixels per second */
         rv = gfmSprite_setVelocity(pLogo->pMainLogo, vx, vy);
         ASSERT(rv == GFMRV_OK, rv);
@@ -245,11 +245,11 @@ gfmRV gameLogo_updateIntro(gameLogo *pLogo) {
         double vx, vy;
 
         /* Get the horizontal speed to maintain the direction */
-        rv = gfmSprite_getHorizontalVelocity(&vy, pLogo->pMainLogo);
+        rv = gfmSprite_getHorizontalVelocity(&vx, pLogo->pMainLogo);
         ASSERT(rv == GFMRV_OK, rv);
 
         /* Calculate and set a new random velocity */
-        _gameLog_getNewVelocity(&vx, &vy);
+        _gameLogo_getNewVelocity(&vx, &vy);
         rv = gfmSprite_setVelocity(pLogo->pMainLogo, vx, -vy);
         ASSERT(rv == GFMRV_OK, rv);
     }

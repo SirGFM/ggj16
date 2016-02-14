@@ -3,6 +3,7 @@
  *
  * Manages playing sfx and songs
  */
+#include <base/assets.h>
 #include <base/game_ctx.h>
 
 #include <GFraMe/gfmAssert.h>
@@ -16,6 +17,10 @@
  * @return GFraMe return value
  */
 gfmRV sound_playSwipe() {
+    if (pGame->loadedAssets < SFX_ON_SWIPE_IN_HND ||
+            pGame->loadedAssets < SFX_ON_SWIPE_OUT_HND) {
+        return GFMRV_OK;
+    }
     if (pGlobal->sfx_lastSwipeWasIn) {
         pGlobal->sfx_lastSwipeWasIn = 0;
         return gfm_playAudio(0, pGame->pCtx, pAudio->sfx_onSwipeOut, 0.4);
@@ -32,6 +37,9 @@ gfmRV sound_playSwipe() {
  * @return GFraMe return value
  */
 gfmRV sound_playEnterItem() {
+    if (pGame->loadedAssets < SFX_ON_ENTER_HND) {
+        return GFMRV_OK;
+    }
     return gfm_playAudio(0, pGame->pCtx, pAudio->sfx_onEnterItem, 0.4);
 }
 
@@ -41,6 +49,21 @@ gfmRV sound_playEnterItem() {
  * @return GFraMe return value
  */
 gfmRV sound_onWrongItem() {
+    if (pGame->loadedAssets < SFX_ON_WRONG_HND) {
+        return GFMRV_OK;
+    }
     return gfm_playAudio(0, pGame->pCtx, pAudio->sfx_onWrongItem, 0.4);
+}
+
+/**
+ * Play the bg song (only once!)
+ *
+ * @return GFraMe return value
+ */
+gfmRV sound_playSong() {
+    if (pGame->loadedAssets < SONG_HND || pGlobal->pSong) {
+        return GFMRV_OK;
+    }
+    return gfm_playAudio(&(pGlobal->pSong), pGame->pCtx, pAudio->song, 1.0);
 }
 

@@ -4,6 +4,7 @@
  * The menu state. Handles the intro animation (that plays while loading the
  * audio!!!), switching to states (options/game/...) etc
  */
+#include <base/assets.h>
 #include <base/game_const.h>
 #include <base/game_ctx.h>
 
@@ -158,7 +159,7 @@ gfmRV ms_introUpdate() {
     rv = gameLogo_updateIntro(pState->pLogo);
     ASSERT(rv == GFMRV_OK, rv);
 
-    if (pGame->loadedAssets >= 1) {
+    if (pGame->loadedAssets >= MAX_HND) {
         pGame->curState = ST_MENU_TWEEN;
         rv = gfmText_setTextStatic(pState->pLoadingTxt, "  GAME LOADED  ",
                 1 /* doCopy */);

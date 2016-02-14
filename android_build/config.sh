@@ -73,9 +73,10 @@ mkdir -p android-project/jni/include/
 # Add all assets
 cd android-project/assets/
 cp -r ../../../assets/gfx/ .
+cp -r ../../../assets/levels/ .
 cp -r ../../../assets/map/ .
 cp -r ../../../assets/mml/ .
-cp -r ../../../assets/levels/ .
+cp -r ../../../assets/sfx/ .
 cd -
 
 # Create a symlink to the SDL2 includes

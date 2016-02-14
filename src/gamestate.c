@@ -19,6 +19,7 @@
 #include <ggj16/gamestate.h>
 #include <ggj16/levelLoader.h>
 #include <ggj16/object.h>
+#include <ggj16/sounds.h>
 #include <ggj16/type.h>
 
 #include <stdlib.h>
@@ -166,7 +167,7 @@ gfmRV gs_init() {
 
 #if !defined(DEBUG)
     if (!pGlobal->pSong) {
-        rv = gfm_playAudio(&(pGlobal->pSong), pGame->pCtx, pAudio->song, 1.0);
+        rv = sound_playSong();
         ASSERT(rv == GFMRV_OK, rv);
     }
 #endif

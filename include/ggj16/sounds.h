@@ -29,5 +29,12 @@ gfmRV sound_playEnterItem();
  */
 gfmRV sound_onWrongItem();
 
+/**
+ * Play the bg song (only once!)
+ *
+ * @return GFraMe return value
+ */
+gfmRV sound_playSong();
+
 #endif /* __SOUNDS_H__ */
 
