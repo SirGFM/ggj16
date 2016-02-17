@@ -12,6 +12,7 @@
 #include <GFraMe/gfmSpriteset.h>
 
 #include <ggj16/cauldron.h>
+#include <ggj16/sounds.h>
 #include <ggj16/type.h>
 
 #include <stdlib.h>
@@ -205,6 +206,36 @@ gfmRV cauldron_update(cauldron *pCal) {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_update(pCal->pDrip, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+
+    if (!pCal->didExplode) {
+        /* Check if the cauldron content's animation just changed to a frame
+         * with a exploding bubble */
+        rv = gfmSprite_didAnimationJustChangeFrame(pCal->pHeatTrail);
+        if (rv == GFMRV_TRUE) {
+            int frame;
+
+            rv = gfmSprite_getFrame(&frame, pCal->pHeatTrail);
+            ASSERT(rv == GFMRV_OK, rv);
+            if (frame == 49 || frame == 51) {
+                /* In that case, play a sfx */
+                rv = sound_bubble();
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+        }
+        /* Now, check if the potion droplet finished dripping to the floor */
+        rv = gfmSprite_didAnimationJustChangeFrame(pCal->pDrip);
+        if (rv == GFMRV_TRUE) {
+            int frame;
+
+            rv = gfmSprite_getFrame(&frame, pCal->pDrip);
+            ASSERT(rv == GFMRV_OK, rv);
+            if (frame == 22) {
+                /* In that case, play a sfx */
+                rv = sound_drip();
+                ASSERT(rv == GFMRV_OK, rv);
+            }
+        }
+    }
 
     rv = GFMRV_OK;
 __ret:

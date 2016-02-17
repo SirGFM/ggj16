@@ -9,6 +9,20 @@
 #include <GFraMe/gfmError.h>
 
 /**
+ * Play the 'drip' sfx
+ *
+ * @return GFraMe return value
+ */
+gfmRV sound_drip();
+
+/**
+ * Play the 'bubble' sfx
+ *
+ * @return GFraMe return value
+ */
+gfmRV sound_bubble();
+
+/**
  * Play the 'swipe' sfx
  *
  * @return GFraMe return value

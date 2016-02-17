@@ -20,6 +20,9 @@ enum enBgAudioHandles {
     SFX_ON_WRONG_HND,
     SFX_ON_SWIPE_IN_HND,
     SFX_ON_SWIPE_OUT_HND,
+    SFX_BUBBLE_1,
+    SFX_BUBBLE_2,
+    SFX_DRIP,
     SONG_HND,
     MAX_HND,
     FIRST_HND = 0

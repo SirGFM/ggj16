@@ -16,6 +16,9 @@ static gfmAssetType pType[MAX_HND] = {
     ASSET_AUDIO,
     ASSET_AUDIO,
     ASSET_AUDIO,
+    ASSET_AUDIO,
+    ASSET_AUDIO,
+    ASSET_AUDIO,
     ASSET_AUDIO
 };
 static char *ppPath[MAX_HND] = {
@@ -23,6 +26,9 @@ static char *ppPath[MAX_HND] = {
     "sfx/onWrongItem.wav",
     "sfx/onSwipeIn.wav",
     "sfx/onSwipeOut.wav",
+    "sfx/bubble_01.wav",
+    "sfx/bubble_02.wav",
+    "sfx/drip.wav",
     "mml/song.mml"
 };
 static const int numAssets = MAX_HND;
@@ -78,6 +84,15 @@ gfmRV assets_load() {
             } break;
             case SFX_ON_SWIPE_OUT_HND: {
                 ppHandles[i] = &(pAudio->sfx_onSwipeOut);
+            } break;
+            case SFX_BUBBLE_1: {
+                ppHandles[i] = &(pAudio->sfx_bubble1);
+            } break;
+            case SFX_BUBBLE_2: {
+                ppHandles[i] = &(pAudio->sfx_bubble2);
+            } break;
+            case SFX_DRIP: {
+                ppHandles[i] = &(pAudio->sfx_drip);
             } break;
             case SONG_HND: {
                 ppHandles[i] = &(pAudio->song);

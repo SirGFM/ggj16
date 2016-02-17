@@ -154,6 +154,9 @@ struct stAudioCtx {
     int sfx_onWrongItem;
     int sfx_onSwipeIn;
     int sfx_onSwipeOut;
+    int sfx_bubble1;
+    int sfx_bubble2;
+    int sfx_drip;
 };
 
 /** Simple button definition, so it's easier to update and access each button */
