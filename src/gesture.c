@@ -191,82 +191,111 @@ gfmRV gesture_update(gesture *pCtx) {
 
     /** Only update the state if we know the previous state */
     if (!pCtx->justReset) {
+        /* Angle variation from the previous frame */
         double deltaAng;
+        /* Distance moved since last frame */
         int dX, dY;
 
-        /* Update the movement state */
         dX = mouseX - pCtx->lastX;
         dY = mouseY - pCtx->lastY;
+        deltaAng = curAng - pCtx->lastAng;
+#define ABS(x) ((x < 0)?-x:x)
+
+        /* Update the movement state */
         if (dX != 0) {
-            /* Few frames of leeway */
+            /* Few ms of horizontal leeway */
             if ((pCtx->dX >= 0 && dX < 0) || (pCtx->dX <= 0 && dX > 0)) {
                 pCtx->xErr += pGame->elapsed;
                 if (pCtx->xErr > GESTURE_ERR_TIME) {
+                    /* If the max time has elapsed and the player is moving on
+                     * the other direction, reset the gesture */
                     pCtx->dX = 0;
                     pCtx->xErr = 0;
                 }
             }
             else {
+                /* Clear the error (since the player is still moving on the
+                 * correct direction) */
                 pCtx->xErr = 0;
             }
 
-            /* Update movement */
+            /* Update horizontal movement */
             pCtx->dX += dX;
             if (pCtx->dX > GESTURE_MOVE) {
-                if (dX > GESTURE_MOVE / 2 &&
+                if (dX > GESTURE_MOVE / 2 && ABS(pCtx->dAng) < PI &&
                         !(pCtx->lastMovement & MOVE_RIGHT)) {
+                    /* Play the sfx if the player moved fast enough and the
+                     * gesture hasn't been set, yet (avoids repeatedly playing
+                     * the sfx) (also doesn't play on spin... kinda...) */
                     rv = sound_playSwipe();
                     ASSERT(rv == GFMRV_OK, rv);
                 }
+                /* Set the horizontal movement to the right */
                 pCtx->move |= MOVE_RIGHT;
                 pCtx->lastMovement = MOVE_RIGHT;
             }
             else if (pCtx->dX < -GESTURE_MOVE) {
-                if (dX < -GESTURE_MOVE / 2 &&
+                if (dX < -GESTURE_MOVE / 2 && ABS(pCtx->dAng) < PI &&
                         !(pCtx->lastMovement & MOVE_LEFT)) {
+                    /* Play the sfx if the player moved fast enough and the
+                     * gesture hasn't been set, yet (avoids repeatedly playing
+                     * the sfx) (also doesn't play on spin... kinda...) */
                     rv = sound_playSwipe();
                     ASSERT(rv == GFMRV_OK, rv);
                 }
-                pCtx->move |= MOVE_LEFT; pCtx->lastMovement = MOVE_LEFT;
+                /* Set the horizontal movement to the left */
+                pCtx->move |= MOVE_LEFT;
+                pCtx->lastMovement = MOVE_LEFT;
             }
         }
         if (dY != 0) {
-            /* Few frames of leeway */
+            /* Few ms of leeway vertical */
             if ((pCtx->dY >= 0 && dY < 0) || (pCtx->dY <= 0 && dY > 0)) {
                 pCtx->yErr += pGame->elapsed;
                 if (pCtx->yErr > GESTURE_ERR_TIME) {
+                    /* If the max time has elapsed and the player is moving on
+                     * the other direction, reset the gesture */
                     pCtx->dY = 0;
                     pCtx->yErr = 0;
                 }
             }
             else {
+                /* Clear the error (since the player is still moving on the
+                 * correct direction) */
                 pCtx->yErr = 0;
             }
 
             /* Update movement */
             pCtx->dY += dY;
             if (pCtx->dY > GESTURE_MOVE) {
-                if (dY > GESTURE_MOVE / 2 &&
+                if (dY > GESTURE_MOVE / 2 && ABS(pCtx->dAng) < PI &&
                         !(pCtx->lastMovement & MOVE_DOWN)) {
+                    /* Play the sfx if the player moved fast enough and the
+                     * gesture hasn't been set, yet (avoids repeatedly playing
+                     * the sfx) (also doesn't play on spin... kinda...) */
                     rv = sound_playSwipe();
                     ASSERT(rv == GFMRV_OK, rv);
                 }
+                /* Set the vertical movement to downward */
                 pCtx->move |= MOVE_DOWN;
                 pCtx->lastMovement = MOVE_DOWN;
             }
             else if (pCtx->dY < -GESTURE_MOVE) {
-                if (dY < -GESTURE_MOVE / 2 &&
+                if (dY < -GESTURE_MOVE / 2 && ABS(pCtx->dAng) < PI &&
                         !(pCtx->lastMovement & MOVE_UP)) {
+                    /* Play the sfx if the player moved fast enough and the
+                     * gesture hasn't been set, yet (avoids repeatedly playing
+                     * the sfx) (also doesn't play on spin... kinda...) */
                     rv = sound_playSwipe();
                     ASSERT(rv == GFMRV_OK, rv);
                 }
+                /* Set the vertical movement to upward */
                 pCtx->move |= MOVE_UP;
                 pCtx->lastMovement = MOVE_UP;
             }
         }
 
         /* Update the angular state */
-        deltaAng = curAng - pCtx->lastAng;
         if ((deltaAng >= 0.0 && pCtx->dAng >= 0.0)) {
             pCtx->dAng += deltaAng;
             pCtx->angErr = 0;
