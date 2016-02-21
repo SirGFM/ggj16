@@ -246,7 +246,13 @@ gfmRV recipeScroll_isExpectedItem(recipeScroll *pScroll, itemType item) {
  * @return              GFMRV_TRUE, GFMRV_FALSE
  */
 gfmRV recipeScroll_didFail(recipeScroll *pScroll) {
-    return pScroll->error;
+    gfmRV rv;
+
+    rv = pScroll->error;
+    /* Clear the error flag, so it won't be issued again next frame */
+    pScroll->error = GFMRV_FALSE;
+
+    return rv;
 }
 
 /**

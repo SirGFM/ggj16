@@ -34,6 +34,8 @@ struct stGamestate {
     gfmGroup *pFire;
     /** Iterator for spawn fire particles */
     int curFire;
+    /** Current number of lives */
+    int lives;
 };
 typedef struct stGamestate gamestate;
 
@@ -180,6 +182,8 @@ gfmRV gs_init() {
 
     gesture_reset(pGlobal->pGesture);
 
+    pState->lives = 4;
+
     pGame->pState = pState;
     rv = GFMRV_OK;
 __ret:
@@ -260,11 +264,16 @@ gfmRV gs_update() {
     rv = recipeScroll_didFail(pGlobal->pRecipe);
     ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
     if (rv == GFMRV_TRUE) {
-        cauldron_doExplode(pGlobal->pCauldron);
+        if (pState->lives > 0) {
+            pState->lives--;
+        }
+        else {
+            cauldron_doExplode(pGlobal->pCauldron);
 
-        if ((pButton->click.state & gfmInput_justReleased) ==
-                gfmInput_justReleased) {
-            pGame->nextState = ST_MENU;
+            if ((pButton->click.state & gfmInput_justReleased) ==
+                    gfmInput_justReleased) {
+                pGame->nextState = ST_MENU;
+            }
         }
     }
 
@@ -299,6 +308,18 @@ gfmRV gs_draw() {
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmGroup_draw(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
+
+    do {
+        int i;
+
+        i = 0;
+        while (i < pState->lives) {
+            /* Draw the lives icon */
+            rv = gfm_drawTile(pGame->pCtx, pGfx->pSset16x16, i * 16 /* x */,
+                    0 /* y */, 31 /* tile */, 0 /* flip */);
+            i++;
+        }
+    } while (0);
 
     /* Draw all objects */
     gfmGenArr_callAll(pState->pObjects, object_draw);
