@@ -260,7 +260,7 @@ gfmRV gs_update() {
     rv = gfmGroup_update(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
-    if (pState->lives > 0) {
+    if (pState->lives <= 0) {
         if ((pButton->click.state & gfmInput_justReleased) ==
                 gfmInput_justReleased) {
             pGame->nextState = ST_MENU;
