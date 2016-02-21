@@ -208,6 +208,7 @@ void config_loadDefault() {
     pConfig->resolution = CONF_RES;
     pConfig->pLast->resolution = CONF_RES;
     pConfig->width = CONF_WIDTH;
+    pConfig->height = CONF_HEIGHT;
     pConfig->audioQuality = CONF_AUDIOQ;
 }
 

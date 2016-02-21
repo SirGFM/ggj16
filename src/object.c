@@ -134,15 +134,15 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     pSset = pGfx->pSset8x8;
 
     /** Initialize the sprite */
-    rv = gfmSprite_init(pObj->pSelf, x, y, width, height, pSset,  0 /* offx */,
-            0 /* offy */, pObj, type);
+    rv = gfmSprite_init(pObj->pSelf, x - 1, y - 1, width + 2, height + 2, pSset,
+            1 /* offx */, 1 /* offy */, pObj, type);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pObj->pSelf, tile);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Set the position the object will be returned */
-    pObj->originX = x;
-    pObj->originY = y;
+    pObj->originX = x - 1;
+    pObj->originY = y - 1;
     /* Cache its type */
     pObj->type = type;
 

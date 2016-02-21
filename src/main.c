@@ -185,6 +185,11 @@ int main(int argc, char *argv[]) {
     /* Load the configurations */
     rv = config_load();
     ASSERT(rv == GFMRV_OK, rv);
+    config_loadDefault();
+    rv = config_saveModifications();
+    ASSERT(rv == GFMRV_OK, rv);
+    rv = config_saveCurAsValid();
+    ASSERT(rv == GFMRV_OK, rv);
 
     if (pConfig->flags & CFG_OPENGL3) {
         /* Set OpenGL 3.1 as the video backend */

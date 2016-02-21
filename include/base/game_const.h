@@ -57,7 +57,11 @@
 #define CONF_RES    0
 #define CONF_WIDTH  640
 #define CONF_HEIGHT 480
-#define CONF_FPS    60
+#if defined(GFRAME_MOBILE)
+#  define CONF_FPS    30
+#else
+#  define CONF_FPS    60
+#endif
 #define CONF_AUDIOQ gfmAudio_defQuality
 
 /* == ... =================================================================== */
