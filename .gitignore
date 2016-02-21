@@ -42,4 +42,12 @@ bin/*
 
 # Android project
 android_build/android-project/
+android_build/icons.tgz
+
+# Helper executables
+tst_playSongSDL2
+tst_repeatSongSDL2
+
+# Link to game's log
+game.log
 

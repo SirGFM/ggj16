@@ -141,10 +141,10 @@ if [ -z "${KEY_ALIAS}" ]; then
 fi
 
 if [ ! -z "${KEY_STORE}" ]; then
-    echo "key.store=${KEY_STORE}" > android-project/ant.properties
+    echo "key.store=${KEY_STORE}" >> android-project/ant.properties
 fi
 if [ ! -z "${KEY_ALIAS}" ]; then
-    echo "key.alias=${KEY_ALIS}" > android-project/ant.properties
+    echo "key.alias=${KEY_ALIAS}" >> android-project/ant.properties
 fi
 
 if [ -z "${PROJECT_NAME}" ]; then
