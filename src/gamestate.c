@@ -260,6 +260,13 @@ gfmRV gs_update() {
     rv = gfmGroup_update(pState->pFire, pGame->pCtx);
     ASSERT(rv == GFMRV_OK, rv);
 
+    if (pState->lives > 0) {
+        if ((pButton->click.state & gfmInput_justReleased) ==
+                gfmInput_justReleased) {
+            pGame->nextState = ST_MENU;
+        }
+    }
+
     /* Everything was updated, check if the user failed */
     rv = recipeScroll_didFail(pGlobal->pRecipe);
     ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
@@ -269,11 +276,6 @@ gfmRV gs_update() {
         }
         else {
             cauldron_doExplode(pGlobal->pCauldron);
-
-            if ((pButton->click.state & gfmInput_justReleased) ==
-                    gfmInput_justReleased) {
-                pGame->nextState = ST_MENU;
-            }
         }
     }
 
