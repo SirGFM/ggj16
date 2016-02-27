@@ -14,6 +14,7 @@
 #include <GFraMe/gfmSpriteset.h>
 
 #include <ggj16/object.h>
+#include <ggj16/recipeScroll.h>
 #include <ggj16/type.h>
 
 #if defined(DEBUG) && !(defined(__WIN32) || defined(__WIN32__))
@@ -35,6 +36,8 @@ struct stObject {
     int offY;
     /** Cached type of the item (for ease of access) */
     itemType type;
+    /** Counter used to make the object blink when expected */
+    int blinkTime;
 };
 
 /**
@@ -166,6 +169,8 @@ gfmRV object_update(object *pObj) {
     int mouseX, mouseY;
     /** The sprite's current tile */
     int tile;
+    /** Currently expected item type */
+    itemType expected;
 
     /* Retrieve the current mouse position */
     rv = gfm_getInput(&pInput, pGame->pCtx);
@@ -177,8 +182,21 @@ gfmRV object_update(object *pObj) {
     rv = gfmSprite_getFrame(&tile, pObj->pSelf);
     ASSERT(rv == GFMRV_OK, rv);
     /* Clear highlight */
-    rv = gfmSprite_setFrame(pObj->pSelf, tile & 0xfffffffe);
+    tile &= 0xfffffffe;
+
+    rv = recipeScroll_getExpectedType(&expected, pGlobal->pRecipe);
     ASSERT(rv == GFMRV_OK, rv);
+    if (expected == pObj->type) {
+        pObj->blinkTime += pGame->elapsed;
+
+        /* If it's the currently expected item, highlight it */
+        if (pObj->blinkTime < 66) {
+            tile |= 1;
+        }
+        else if (pObj->blinkTime >= 122) {
+            pObj->blinkTime -= 122;
+        }
+    }
 
     /* Check if it's inside */
     if (!pGlobal->isDragging) {
@@ -186,8 +204,7 @@ gfmRV object_update(object *pObj) {
         ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
         if (rv == GFMRV_TRUE) {
             /* Highlight it */
-            rv = gfmSprite_setFrame(pObj->pSelf, tile | 1);
-            ASSERT(rv == GFMRV_OK, rv);
+            tile |= 1;
             /* Check if it should be dragged */
             if ((pButton->click.state & gfmInput_justPressed) ==
                     gfmInput_justPressed) {
@@ -205,6 +222,10 @@ gfmRV object_update(object *pObj) {
             }
         }
     }
+
+    /* Update the tile */
+    rv = gfmSprite_setFrame(pObj->pSelf, tile);
+    ASSERT(rv == GFMRV_OK, rv);
 
     /* Check if the object being dragged it this */
     if (pGlobal->pDragging == pObj) {

@@ -46,6 +46,15 @@ gfmRV recipeScroll_load(recipeScroll *pScroll, itemType *pItems, int length,
         double speed);
 
 /**
+ * Retrieve the expected type
+ *
+ * @param  [out]pItem   The checking item
+ * @param  [ in]pScroll The object
+ * @return              GFraMe return value
+ */
+gfmRV recipeScroll_getExpectedType(itemType *pItem, recipeScroll *pScroll);
+
+/**
  * Check if a item is the expected one. If it's not, an error flag will be set!
  *
  * @param  [ in]pScroll The object
