@@ -184,6 +184,10 @@ gfmRV gs_init() {
 
     pState->lives = 4;
 
+#if defined GFRAME_MOBILE
+    gfm_resetFPS(pGame->pCtx);
+#endif
+
     pGame->pState = pState;
     rv = GFMRV_OK;
 __ret:

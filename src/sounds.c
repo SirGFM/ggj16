@@ -9,7 +9,9 @@
 #include <GFraMe/gfmAssert.h>
 #include <GFraMe/gfmError.h>
 
+#include <ggj16/recipeScroll.h>
 #include <ggj16/sounds.h>
+#include <ggj16/type.h>
 
 #include <stdlib.h>
 
@@ -57,10 +59,16 @@ gfmRV sound_bubble() {
  * @return GFraMe return value
  */
 gfmRV sound_playSwipe() {
+    itemType item;
+
+    recipeScroll_getExpectedType(&item, pGlobal->pRecipe);
+
     if (pGame->loadedAssets < SFX_ON_SWIPE_IN_HND ||
-            pGame->loadedAssets < SFX_ON_SWIPE_OUT_HND) {
+            pGame->loadedAssets < SFX_ON_SWIPE_OUT_HND ||
+            (item != T_MOVE_VERTICAL && item != T_MOVE_HORIZONTAL)) {
         return GFMRV_OK;
     }
+
     if (pGlobal->sfx_lastSwipeWasIn) {
         pGlobal->sfx_lastSwipeWasIn = 0;
         return gfm_playAudio(0, pGame->pCtx, pAudio->sfx_onSwipeOut,
