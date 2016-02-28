@@ -36,7 +36,7 @@
   <object id="28" name="bat_wing" type="bat_wing" gid="67" x="18" y="33" width="8" height="8"/>
   <object id="29" name="skull" type="skull" gid="75" x="96" y="38" width="8" height="8"/>
   <object id="30" name="mushroom" type="mushroom" gid="79" x="60" y="38" width="8" height="8"/>
-  <object id="31" name="web" type="web" gid="71" x="18" y="71" width="8" height="8"/>
-  <object id="32" name="bone" type="bone" gid="77" x="78" y="38" width="8" height="8"/>
+  <object id="31" name="star" type="star" gid="71" x="18" y="71" width="8" height="8"/>
+  <object id="32" name="horn" type="horn" gid="77" x="78" y="38" width="8" height="8"/>
  </objectgroup>
 </map>

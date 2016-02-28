@@ -17,10 +17,10 @@ enum enItemType {
     T_RAT_TAIL = 0,
     T_BAT_WING,
     T_EYE,
-    T_WEB,
+    T_STAR,
     T_PHOENIX_FEATHER,
     T_SKULL,
-    T_BONE,
+    T_HORN,
     T_MUSHROOM,
     T_WAIT, /* Doesn't work, do not use */
     T_ROTATE_CW,
