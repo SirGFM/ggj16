@@ -111,6 +111,8 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     int x, y;
     /** Sprite's dimensions */
     int height, width;
+    /** Sprite's offset from object */
+    int offx, offy;
     /** Sprite's tile */
     int tile;
     /** Type of the current item */
@@ -137,15 +139,17 @@ gfmRV object_init(object *pObj, gfmParser *pParser) {
     pSset = pGfx->pSset8x8;
 
     /** Initialize the sprite */
-    rv = gfmSprite_init(pObj->pSelf, x - 1, y - 1, width + 2, height + 2, pSset,
-            1 /* offx */, 1 /* offy */, pObj, type);
+    offx = 3;
+    offy = 3;
+    rv = gfmSprite_init(pObj->pSelf, x - offx, y - offy, width + offx * 2,
+            height + offy * 2, pSset, offx, offy, pObj, type);
     ASSERT(rv == GFMRV_OK, rv);
     rv = gfmSprite_setFrame(pObj->pSelf, tile);
     ASSERT(rv == GFMRV_OK, rv);
 
     /* Set the position the object will be returned */
-    pObj->originX = x - 1;
-    pObj->originY = y - 1;
+    pObj->originX = x - offx;
+    pObj->originY = y - offy;
     /* Cache its type */
     pObj->type = type;
 
