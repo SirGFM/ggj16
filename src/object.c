@@ -233,23 +233,30 @@ gfmRV object_update(object *pObj) {
 
     /* Check if the object being dragged it this */
     if (pGlobal->pDragging == pObj) {
-        /* Check if it should be released */
-        if ((pButton->click.state & gfmInput_justReleased) ==
+        gfmRV isOverlaping;
+        itemType expected;
+
+        rv = recipeScroll_getExpectedType(&expected, pGlobal->pRecipe);
+        ASSERT(rv == GFMRV_OK, rv);
+        isOverlaping = cauldron_isOverlapping(pGlobal->pCauldron, pObj->pSelf);
+
+        /* Check if it should be released (either if it was released or if the
+         * correct ingredient went over the cauldron) */
+        if ((expected == pObj->type && isOverlaping == GFMRV_TRUE) ||
+                (pButton->click.state & gfmInput_justReleased) ==
                 gfmInput_justReleased) {
-                pGlobal->isDragging = 0;
-                pGlobal->pDragging = 0;
+            pGlobal->isDragging = 0;
+            pGlobal->pDragging = 0;
 
-                /*  Check if it's over the cauldron */
-                rv = cauldron_isOverlapping(pGlobal->pCauldron, pObj->pSelf);
-                ASSERT(rv == GFMRV_TRUE || rv == GFMRV_FALSE, rv);
-                if (rv == GFMRV_TRUE) {
-                    /* Check if it was the expected type */
-                    recipeScroll_isExpectedItem(pGlobal->pRecipe, pObj->type);
-                }
+            /*  Check if it's over the cauldron */
+            if (isOverlaping == GFMRV_TRUE) {
+                /* Check if it was the expected type */
+                recipeScroll_isExpectedItem(pGlobal->pRecipe, pObj->type);
+            }
 
-                rv = gfmSprite_setPosition(pObj->pSelf, pObj->originX,
-                        pObj->originY);
-                ASSERT(rv == GFMRV_OK, rv);
+            rv = gfmSprite_setPosition(pObj->pSelf, pObj->originX,
+                    pObj->originY);
+            ASSERT(rv == GFMRV_OK, rv);
         }
         else {
             /* Update its position */
